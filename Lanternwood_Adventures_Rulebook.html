@@ -1,0 +1,2948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lanternwood Adventures — Digital Rulebook</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Merriweather+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #2c1810;
+    --ink-light: #4a2f22;
+    --parchment: #f5ead6;
+    --parchment-dark: #ede0c2;
+    --parchment-deep: #d4c4a0;
+    --amber: #c47c2b;
+    --amber-light: #e8a94a;
+    --amber-glow: #ffd580;
+    --moss: #5a7a3a;
+    --moss-light: #7a9a55;
+    --teal: #2e6b6b;
+    --rose: #8b3a3a;
+    --lantern: #ff9a2e;
+    --sidebar-w: 280px;
+    --header-h: 64px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lora', Georgia, serif;
+    background: var(--ink);
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* ─── STARFIELD BACKGROUND ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(255,180,60,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(90,122,58,0.08) 0%, transparent 40%),
+      #1a0f08;
+    z-index: -2;
+  }
+
+  /* ─── SIDEBAR ─── */
+  #sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: var(--sidebar-w);
+    background: linear-gradient(180deg, #1a0e06 0%, #0f0904 100%);
+    border-right: 2px solid rgba(196,124,43,0.3);
+    overflow-y: auto;
+    z-index: 100;
+    transition: transform 0.3s ease;
+    scrollbar-width: thin;
+    scrollbar-color: var(--amber) transparent;
+  }
+
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--amber); border-radius: 2px; }
+
+  .sidebar-header {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid rgba(196,124,43,0.2);
+    text-align: center;
+  }
+
+  .sidebar-logo {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 13px;
+    color: var(--amber-light);
+    letter-spacing: 0.05em;
+    line-height: 1.5;
+  }
+
+  .sidebar-subtitle {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 10px;
+    color: rgba(196,124,43,0.6);
+    margin-top: 4px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .lantern-icon {
+    display: block;
+    margin: 0 auto 10px;
+    width: 36px;
+    height: 36px;
+    filter: drop-shadow(0 0 8px rgba(255,154,46,0.6));
+    animation: lanternFlicker 4s ease-in-out infinite;
+  }
+
+  @keyframes lanternFlicker {
+    0%, 100% { filter: drop-shadow(0 0 8px rgba(255,154,46,0.6)); }
+    50% { filter: drop-shadow(0 0 14px rgba(255,154,46,0.9)); }
+  }
+
+  .nav-section-label {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: rgba(196,124,43,0.5);
+    padding: 14px 20px 4px;
+  }
+
+  .nav-item {
+    display: block;
+    padding: 7px 20px 7px 24px;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 12px;
+    color: rgba(245,234,214,0.7);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-left: 2px solid transparent;
+    line-height: 1.4;
+  }
+
+  .nav-item:hover {
+    color: var(--amber-light);
+    border-left-color: var(--amber);
+    background: rgba(196,124,43,0.08);
+    padding-left: 28px;
+  }
+
+  .nav-item.active {
+    color: var(--amber-glow);
+    border-left-color: var(--amber-light);
+    background: rgba(196,124,43,0.12);
+    font-weight: 600;
+  }
+
+  .nav-item .num {
+    display: inline-block;
+    width: 22px;
+    color: rgba(196,124,43,0.5);
+    font-size: 10px;
+  }
+
+  /* ─── MAIN CONTENT ─── */
+  #main {
+    margin-left: var(--sidebar-w);
+    min-height: 100vh;
+    background: var(--parchment);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    position: relative;
+  }
+
+  /* ─── TOP BAR ─── */
+  #topbar {
+    position: sticky;
+    top: 0;
+    height: var(--header-h);
+    background: rgba(245,234,214,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 2px solid var(--parchment-deep);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    z-index: 50;
+  }
+
+  #topbar-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 15px;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+  }
+
+  #topbar-section {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 11px;
+    color: var(--amber);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ─── DICE ROLLER ─── */
+  #dice-widget {
+    background: var(--ink);
+    border: 1px solid rgba(196,124,43,0.4);
+    border-radius: 8px;
+    padding: 6px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  #dice-widget:hover {
+    border-color: var(--amber-light);
+    background: #2c1810;
+  }
+
+  #dice-widget .dice-label {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 10px;
+    color: rgba(196,124,43,0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  #dice-result {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 18px;
+    color: var(--amber-light);
+    min-width: 24px;
+    text-align: center;
+    transition: transform 0.3s;
+  }
+
+  #dice-result.rolling {
+    animation: diceRoll 0.4s ease;
+  }
+
+  @keyframes diceRoll {
+    0% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(-15deg) scale(1.3); }
+    75% { transform: rotate(15deg) scale(1.3); }
+    100% { transform: rotate(0deg) scale(1); }
+  }
+
+  /* ─── CONTENT AREA ─── */
+  #content {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 48px 40px 80px;
+  }
+
+  /* ─── SECTIONS ─── */
+  .section {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .section.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── TYPOGRAPHY ─── */
+  .section-badge {
+    display: inline-block;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--amber);
+    background: rgba(196,124,43,0.1);
+    border: 1px solid rgba(196,124,43,0.3);
+    padding: 3px 10px;
+    border-radius: 2px;
+    margin-bottom: 12px;
+  }
+
+  h1.page-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(28px, 5vw, 42px);
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+  }
+
+  h2.section-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(18px, 3vw, 24px);
+    color: var(--ink);
+    margin: 32px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--parchment-deep);
+    position: relative;
+  }
+
+  h2.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    width: 60px; height: 2px;
+    background: var(--amber);
+  }
+
+  h3.sub-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 15px;
+    color: var(--ink-light);
+    margin: 24px 0 10px;
+    letter-spacing: 0.05em;
+  }
+
+  p {
+    line-height: 1.8;
+    margin-bottom: 14px;
+    font-size: 15px;
+    color: var(--ink);
+  }
+
+  em { color: var(--ink-light); }
+
+  strong {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  /* ─── DIVIDER ─── */
+  .ornament {
+    text-align: center;
+    color: var(--amber);
+    font-size: 18px;
+    margin: 28px 0;
+    opacity: 0.6;
+    letter-spacing: 8px;
+  }
+
+  /* ─── PLAY QUOTES ─── */
+  .play-quote {
+    background: linear-gradient(135deg, rgba(196,124,43,0.08), rgba(196,124,43,0.04));
+    border-left: 3px solid var(--amber);
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-radius: 0 6px 6px 0;
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink-light);
+  }
+
+  .play-quote .speaker {
+    font-weight: 600;
+    color: var(--amber);
+    font-style: normal;
+  }
+
+  /* ─── TIP BOXES ─── */
+  .tip-box {
+    background: rgba(90,122,58,0.08);
+    border: 1px solid rgba(90,122,58,0.25);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    position: relative;
+  }
+
+  .tip-box::before {
+    content: '🌿 GM TIP';
+    display: block;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--moss);
+    margin-bottom: 8px;
+  }
+
+  .tip-box p { margin: 0; font-size: 14px; color: var(--ink-light); }
+
+  /* ─── RULE BOXES ─── */
+  .rule-box {
+    background: rgba(44,24,16,0.04);
+    border: 1px solid var(--parchment-deep);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+
+  .rule-box h4 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 13px;
+    color: var(--rose);
+    margin-bottom: 10px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ─── BULLET LISTS ─── */
+  ul.book-list {
+    list-style: none;
+    margin: 12px 0 16px 0;
+    padding: 0;
+  }
+
+  ul.book-list li {
+    padding: 4px 0 4px 22px;
+    position: relative;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  ul.book-list li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    color: var(--amber);
+    font-size: 8px;
+    top: 9px;
+  }
+
+  ol.book-list {
+    margin: 12px 0 16px 0;
+    padding: 0 0 0 24px;
+  }
+
+  ol.book-list li {
+    padding: 4px 0 4px 8px;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* ─── TABLES ─── */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 20px 0;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(44,24,16,0.08);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: white;
+  }
+
+  th {
+    background: var(--ink);
+    color: var(--parchment);
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 10px 14px;
+    text-align: left;
+  }
+
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--parchment-deep);
+    line-height: 1.5;
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td { background: rgba(212,196,160,0.2); }
+  tr:hover td { background: rgba(196,124,43,0.08); }
+
+  td:first-child {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-weight: 600;
+    color: var(--amber);
+    white-space: nowrap;
+  }
+
+  /* ─── HERO COVER ─── */
+  .cover-section {
+    text-align: center;
+    padding: 20px 0 40px;
+  }
+
+  .cover-art {
+    margin: 0 auto 32px;
+    width: 100%;
+    max-width: 600px;
+  }
+
+  .cover-subtitle {
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: var(--ink-light);
+    margin-bottom: 24px;
+  }
+
+  .intro-narrative {
+    background: linear-gradient(135deg, rgba(196,124,43,0.06), rgba(90,122,58,0.04));
+    border: 1px solid var(--parchment-deep);
+    border-radius: 8px;
+    padding: 28px 32px;
+    margin: 28px 0;
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.9;
+    text-align: left;
+    position: relative;
+  }
+
+  .intro-narrative::before,
+  .intro-narrative::after {
+    content: '❧';
+    display: block;
+    text-align: center;
+    color: var(--amber);
+    font-size: 20px;
+    margin: 8px 0;
+    font-style: normal;
+  }
+
+  /* ─── CLASS CARDS ─── */
+  .class-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+  }
+
+  .class-card {
+    background: white;
+    border: 1px solid var(--parchment-deep);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .class-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(44,24,16,0.12);
+    border-color: var(--amber);
+  }
+
+  .class-emoji { font-size: 28px; margin-bottom: 8px; }
+
+  .class-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 12px;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .class-desc {
+    font-size: 12px;
+    color: var(--ink-light);
+    line-height: 1.5;
+  }
+
+  /* ─── STAT BLOCK ─── */
+  .monster-grid {
+    display: grid;
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .monster-card {
+    background: white;
+    border: 1px solid var(--parchment-deep);
+    border-radius: 6px;
+    padding: 14px 18px;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 12px;
+    align-items: start;
+    transition: box-shadow 0.2s;
+  }
+
+  .monster-card:hover {
+    box-shadow: 0 3px 12px rgba(44,24,16,0.1);
+  }
+
+  .monster-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 13px;
+    color: var(--rose);
+    margin-bottom: 4px;
+  }
+
+  .monster-notes {
+    font-size: 13px;
+    color: var(--ink-light);
+    line-height: 1.5;
+  }
+
+  .monster-stat {
+    text-align: center;
+    background: var(--parchment-dark);
+    border-radius: 4px;
+    padding: 6px 10px;
+    min-width: 50px;
+  }
+
+  .monster-stat-label {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--amber);
+    display: block;
+  }
+
+  .monster-stat-val {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 18px;
+    color: var(--ink);
+    display: block;
+  }
+
+  /* ─── QUICK REFERENCE SHEET ─── */
+  .cheat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .cheat-card {
+    background: white;
+    border-radius: 6px;
+    padding: 14px 16px;
+    border-left: 3px solid var(--amber);
+  }
+
+  .cheat-card h4 {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+    margin-bottom: 6px;
+  }
+
+  .cheat-card p {
+    font-size: 13px;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* ─── HEX MAP ─── */
+  .hex-map-container {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    margin: 20px 0;
+    text-align: center;
+    border: 1px solid var(--parchment-deep);
+  }
+
+  /* ─── DICE ROLL MODAL ─── */
+  #dice-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,15,6,0.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #dice-modal.open { display: flex; }
+
+  .dice-panel {
+    background: var(--parchment);
+    border: 2px solid var(--amber);
+    border-radius: 12px;
+    padding: 32px 40px;
+    text-align: center;
+    max-width: 380px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .dice-panel h3 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 16px;
+    color: var(--ink);
+    margin-bottom: 20px;
+  }
+
+  .dice-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .dice-btn {
+    background: var(--ink);
+    color: var(--parchment);
+    border: 2px solid var(--amber);
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .dice-btn:hover {
+    background: var(--amber);
+    color: var(--ink);
+    transform: translateY(-2px);
+  }
+
+  .dice-output {
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .dice-big-result {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 52px;
+    color: var(--amber);
+    line-height: 1;
+    text-shadow: 0 0 20px rgba(196,124,43,0.4);
+  }
+
+  .dice-individual {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 12px;
+    color: var(--ink-light);
+  }
+
+  .dice-outcome {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  .outcome-success { background: rgba(90,122,58,0.15); color: var(--moss); }
+  .outcome-twist { background: rgba(196,124,43,0.15); color: var(--amber); }
+  .outcome-fail { background: rgba(139,58,58,0.12); color: var(--rose); }
+
+  .close-modal {
+    margin-top: 16px;
+    background: none;
+    border: 1px solid var(--parchment-deep);
+    color: var(--ink-light);
+    padding: 7px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 12px;
+    transition: all 0.2s;
+  }
+
+  .close-modal:hover { border-color: var(--amber); color: var(--amber); }
+
+  /* ─── MOBILE TOGGLE ─── */
+  #menu-toggle {
+    display: none;
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 52px; height: 52px;
+    background: var(--amber);
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 150;
+    box-shadow: 0 4px 16px rgba(196,124,43,0.5);
+    color: var(--ink);
+  }
+
+  /* ─── PROGRESS BAR ─── */
+  #progress {
+    position: fixed;
+    top: 0; left: var(--sidebar-w);
+    height: 3px;
+    background: var(--amber);
+    transition: width 0.3s;
+    z-index: 200;
+  }
+
+  /* ─── REGION CARDS ─── */
+  .region-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+  }
+
+  .region-card {
+    background: white;
+    border-radius: 8px;
+    padding: 18px;
+    border-top: 3px solid var(--amber);
+    transition: transform 0.2s;
+  }
+
+  .region-card:hover { transform: translateY(-2px); }
+
+  .region-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 13px;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .region-desc { font-size: 13px; color: var(--ink-light); line-height: 1.6; }
+
+  /* ─── TN REFERENCE ─── */
+  .tn-strip {
+    display: flex;
+    gap: 8px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+
+  .tn-pill {
+    flex: 1;
+    min-width: 80px;
+    background: white;
+    border-radius: 6px;
+    text-align: center;
+    padding: 10px 8px;
+    border-bottom: 3px solid;
+  }
+
+  .tn-pill:nth-child(1) { border-color: var(--moss); }
+  .tn-pill:nth-child(2) { border-color: var(--amber); }
+  .tn-pill:nth-child(3) { border-color: var(--rose); }
+  .tn-pill:nth-child(4) { border-color: #6b3a8b; }
+
+  .tn-pill .tn-label {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-light);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .tn-pill .tn-num {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 22px;
+    color: var(--ink);
+    display: block;
+  }
+
+  /* ─── CHARACTER SHEET ─── */
+  .char-sheet {
+    background: white;
+    border: 2px solid var(--parchment-deep);
+    border-radius: 8px;
+    padding: 28px;
+    font-family: 'Merriweather Sans', sans-serif;
+    margin: 20px 0;
+  }
+
+  .char-sheet-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 20px;
+    text-align: center;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .char-sheet-sub {
+    text-align: center;
+    font-size: 11px;
+    color: var(--ink-light);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .char-field {
+    border-bottom: 1px solid var(--parchment-deep);
+    margin-bottom: 12px;
+    padding-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .char-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--amber);
+    min-width: 100px;
+  }
+
+  .char-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: 'Lora', serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: transparent;
+  }
+
+  .char-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
+  }
+
+  .stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(212,196,160,0.5);
+  }
+
+  .stat-name { font-size: 13px; color: var(--ink); }
+
+  .stat-toggle {
+    display: flex;
+    gap: 6px;
+  }
+
+  .stat-btn {
+    width: 34px; height: 28px;
+    border: 1px solid var(--parchment-deep);
+    border-radius: 4px;
+    background: var(--parchment);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-weight: 600;
+  }
+
+  .stat-btn.selected {
+    background: var(--amber);
+    color: white;
+    border-color: var(--amber);
+  }
+
+  .hp-tracker {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .hp-pip {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--rose);
+    cursor: pointer;
+    transition: all 0.15s;
+    background: white;
+  }
+
+  .hp-pip.filled { background: var(--rose); }
+
+  .trait-list { margin-top: 8px; }
+
+  .trait-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    border-bottom: 1px dashed var(--parchment-deep);
+  }
+
+  .trait-item input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    color: var(--ink);
+    background: transparent;
+  }
+
+  .print-btn {
+    background: var(--ink);
+    color: var(--parchment);
+    border: none;
+    padding: 10px 24px;
+    border-radius: 4px;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 16px;
+  }
+
+  .print-btn:hover { background: var(--amber); color: var(--ink); }
+
+  /* ─── STEP CARDS ─── */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .step-card {
+    background: white;
+    border-radius: 6px;
+    padding: 16px 20px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    border: 1px solid var(--parchment-deep);
+    transition: box-shadow 0.2s;
+  }
+
+  .step-card:hover { box-shadow: 0 3px 12px rgba(44,24,16,0.08); }
+
+  .step-num {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 22px;
+    color: var(--amber);
+    min-width: 36px;
+    line-height: 1;
+    padding-top: 2px;
+  }
+
+  .step-content h4 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 13px;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .step-content p { font-size: 14px; margin: 0; }
+
+  /* ─── ADVENTURE GENERATOR ─── */
+  .generator-panel {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    margin: 20px 0;
+    border: 1px solid var(--parchment-deep);
+    text-align: center;
+  }
+
+  .generator-result {
+    margin: 16px 0;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .gen-pill {
+    background: var(--ink);
+    color: var(--parchment);
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 13px;
+    animation: popIn 0.3s ease;
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .gen-sep {
+    color: var(--amber);
+    font-size: 18px;
+  }
+
+  .gen-btn {
+    background: var(--amber);
+    color: var(--ink);
+    border: none;
+    padding: 12px 28px;
+    border-radius: 6px;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 3px 10px rgba(196,124,43,0.3);
+  }
+
+  .gen-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(196,124,43,0.4);
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    #sidebar {
+      transform: translateX(-100%);
+    }
+
+    #sidebar.open {
+      transform: translateX(0);
+    }
+
+    #main {
+      margin-left: 0;
+    }
+
+    #progress { left: 0; }
+
+    #menu-toggle { display: flex; align-items: center; justify-content: center; }
+
+    #content { padding: 32px 20px 80px; }
+
+    .cheat-grid { grid-template-columns: 1fr; }
+
+    .char-grid { grid-template-columns: 1fr; }
+
+    .monster-card { grid-template-columns: 1fr; }
+  }
+
+  /* ─── PRINT ─── */
+  @media print {
+    #sidebar, #topbar, #dice-modal, #menu-toggle, #progress { display: none !important; }
+    #main { margin-left: 0; }
+    .section { display: block !important; }
+    .section-badge, .ornament { page-break-after: avoid; }
+  }
+
+  /* ─── SCROLLBAR ─── */
+  #main::-webkit-scrollbar { width: 6px; }
+  #main::-webkit-scrollbar-thumb { background: var(--parchment-deep); border-radius: 3px; }
+
+  /* ─── SAFETY CARDS ─── */
+  .safety-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .safety-card {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    border-top: 3px solid var(--teal);
+  }
+
+  .safety-emoji { font-size: 24px; margin-bottom: 8px; }
+  .safety-name { font-family: 'Cinzel Decorative', serif; font-size: 13px; color: var(--teal); margin-bottom: 6px; }
+  .safety-desc { font-size: 12px; color: var(--ink-light); line-height: 1.5; }
+
+  /* d66 EXPLAINER */
+  .d66-box {
+    background: rgba(46,107,107,0.08);
+    border: 1px solid rgba(46,107,107,0.25);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 20px 0;
+  }
+
+  .d66-box::before {
+    content: '🎲 HOW D66 WORKS';
+    display: block;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--teal);
+    margin-bottom: 8px;
+  }
+
+  .d66-box p { margin: 0; font-size: 14px; color: var(--ink-light); }
+
+  /* SPELL CARDS */
+  .spell-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    margin: 16px 0;
+  }
+
+  .spell-card {
+    background: white;
+    border-radius: 6px;
+    padding: 12px 14px;
+    border-left: 3px solid var(--teal);
+    font-size: 13px;
+    line-height: 1.5;
+    transition: box-shadow 0.15s;
+  }
+
+  .spell-card:hover { box-shadow: 0 2px 8px rgba(44,24,16,0.1); }
+
+  .spell-name {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-weight: 600;
+    color: var(--teal);
+    margin-bottom: 3px;
+    font-size: 13px;
+  }
+
+  .spell-card.healer { border-color: var(--rose); }
+  .spell-card.healer .spell-name { color: var(--rose); }
+
+  /* NAV OVERLAY */
+  #nav-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 99;
+  }
+
+  #nav-overlay.open { display: block; }
+</style>
+</head>
+<body>
+
+<!-- PROGRESS BAR -->
+<div id="progress" style="width: 0%"></div>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <svg class="lantern-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="10" width="16" height="20" rx="3" fill="#ff9a2e" opacity="0.9"/>
+      <rect x="12" y="12" width="12" height="16" rx="2" fill="#ffd580" opacity="0.7"/>
+      <line x1="18" y1="2" x2="18" y2="10" stroke="#c47c2b" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="18" cy="20" r="4" fill="#fff" opacity="0.6"/>
+      <line x1="10" y1="30" x2="26" y2="30" stroke="#c47c2b" stroke-width="2" stroke-linecap="round"/>
+      <line x1="13" y1="30" x2="13" y2="34" stroke="#c47c2b" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="23" y1="30" x2="23" y2="34" stroke="#c47c2b" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <div class="sidebar-logo">Lanternwood<br>Adventures</div>
+    <div class="sidebar-subtitle">Digital Rulebook</div>
+  </div>
+
+  <div class="nav-section-label">Start Here</div>
+  <a class="nav-item active" onclick="showSection('cover')"><span class="num">✦</span> Cover & Story</a>
+  <a class="nav-item" onclick="showSection('s1')"><span class="num">1.</span> What is Role-Playing?</a>
+  <a class="nav-item" onclick="showSection('s2')"><span class="num">2.</span> The Cozy Realms</a>
+  <a class="nav-item" onclick="showSection('s3')"><span class="num">3.</span> What You Need</a>
+  <a class="nav-item" onclick="showSection('s4')"><span class="num">4.</span> Quick Start</a>
+
+  <div class="nav-section-label">Your Hero</div>
+  <a class="nav-item" onclick="showSection('s5')"><span class="num">5.</span> Character Creation</a>
+  <a class="nav-item" onclick="showSection('s6')"><span class="num">6.</span> Classes & Races</a>
+  <a class="nav-item" onclick="showSection('s7')"><span class="num">7.</span> Names & Traits</a>
+
+  <div class="nav-section-label">How to Play</div>
+  <a class="nav-item" onclick="showSection('s8')"><span class="num">8.</span> Core Rules</a>
+  <a class="nav-item" onclick="showSection('s9')"><span class="num">9.</span> Conflict Types</a>
+  <a class="nav-item" onclick="showSection('s10')"><span class="num">10.</span> Conflict & Combat</a>
+  <a class="nav-item" onclick="showSection('s11')"><span class="num">11.</span> Magic & Spells</a>
+
+  <div class="nav-section-label">For the GM</div>
+  <a class="nav-item" onclick="showSection('s12')"><span class="num">12.</span> GM Guidance</a>
+  <a class="nav-item" onclick="showSection('s13')"><span class="num">13.</span> Step-by-Step GM Guide</a>
+  <a class="nav-item" onclick="showSection('s14')"><span class="num">14.</span> Hexcrawl</a>
+
+  <div class="nav-section-label">The World</div>
+  <a class="nav-item" onclick="showSection('s15')"><span class="num">15.</span> Adventure Generator</a>
+  <a class="nav-item" onclick="showSection('s16')"><span class="num">16.</span> Discoveries</a>
+  <a class="nav-item" onclick="showSection('s17')"><span class="num">17.</span> Fey Encounters</a>
+  <a class="nav-item" onclick="showSection('s18')"><span class="num">18.</span> Rumours & Town Tones</a>
+  <a class="nav-item" onclick="showSection('s19')"><span class="num">19.</span> NPCs</a>
+  <a class="nav-item" onclick="showSection('s20')"><span class="num">20.</span> Monsters</a>
+  <a class="nav-item" onclick="showSection('s21')"><span class="num">21.</span> Treasure & Rewards</a>
+
+  <div class="nav-section-label">Adventures</div>
+  <a class="nav-item" onclick="showSection('s22')"><span class="num">22.</span> Micro-Adventure</a>
+  <a class="nav-item" onclick="showSection('s23')"><span class="num">23.</span> Examples of Play</a>
+
+  <div class="nav-section-label">Reference</div>
+  <a class="nav-item" onclick="showSection('s24')"><span class="num">24.</span> GM Cheat Sheet</a>
+  <a class="nav-item" onclick="showSection('s25')"><span class="num">25.</span> Optional Rules</a>
+  <a class="nav-item" onclick="showSection('s26')"><span class="num">26.</span> Hex Map</a>
+  <a class="nav-item" onclick="showSection('s27')"><span class="num">27.</span> Character Sheet</a>
+  <a class="nav-item" onclick="showSection('s28')"><span class="num">28.</span> Example Hexes</a>
+
+  <div style="height: 32px;"></div>
+</nav>
+
+<!-- NAV OVERLAY (mobile) -->
+<div id="nav-overlay" onclick="closeSidebar()"></div>
+
+<!-- MAIN CONTENT -->
+<div id="main">
+  <div id="topbar">
+    <div id="topbar-title">Lanternwood Adventures</div>
+    <div id="topbar-section">Cover & Story</div>
+    <div id="dice-widget" onclick="openDiceModal()">
+      <span class="dice-label">Roll Dice</span>
+      <span id="dice-result">⚄</span>
+    </div>
+  </div>
+
+  <div id="content">
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- COVER -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section active" id="sec-cover">
+      <div class="cover-section">
+        <svg class="cover-art" viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg">
+          <!-- Sky -->
+          <rect width="600" height="280" fill="#1a0f08"/>
+          <!-- Stars -->
+          <circle cx="50" cy="30" r="1.2" fill="#ffd580" opacity="0.8"/>
+          <circle cx="120" cy="15" r="0.8" fill="#ffd580" opacity="0.6"/>
+          <circle cx="200" cy="25" r="1" fill="#ffd580" opacity="0.7"/>
+          <circle cx="300" cy="10" r="1.4" fill="#ffd580" opacity="0.9"/>
+          <circle cx="380" cy="20" r="0.9" fill="#ffd580" opacity="0.7"/>
+          <circle cx="450" cy="35" r="1.1" fill="#ffd580" opacity="0.8"/>
+          <circle cx="520" cy="12" r="0.7" fill="#ffd580" opacity="0.6"/>
+          <circle cx="570" cy="28" r="1.3" fill="#ffd580" opacity="0.8"/>
+          <circle cx="80" cy="55" r="0.8" fill="#ffd580" opacity="0.5"/>
+          <circle cx="160" cy="48" r="1.0" fill="#ffd580" opacity="0.6"/>
+          <circle cx="340" cy="42" r="0.9" fill="#ffd580" opacity="0.7"/>
+          <circle cx="490" cy="50" r="1.2" fill="#ffd580" opacity="0.6"/>
+          <!-- Mountains -->
+          <polygon points="0,180 80,80 160,180" fill="#0f0803"/>
+          <polygon points="60,180 150,70 240,180" fill="#140a05"/>
+          <polygon points="140,180 220,90 310,180" fill="#0f0803"/>
+          <polygon points="280,180 370,60 460,180" fill="#140a05"/>
+          <polygon points="380,180 470,85 560,180" fill="#0f0803"/>
+          <polygon points="460,180 540,95 600,180" fill="#140a05"/>
+          <!-- Forest silhouette -->
+          <rect x="0" y="175" width="600" height="105" fill="#0a0603"/>
+          <!-- Tree shapes -->
+          <polygon points="20,175 35,140 50,175" fill="#0d0905"/>
+          <polygon points="40,175 58,135 76,175" fill="#111208"/>
+          <polygon points="70,175 88,128 106,175" fill="#0d0905"/>
+          <polygon points="95,175 115,138 135,175" fill="#111208"/>
+          <polygon points="130,175 148,132 166,175" fill="#0d0905"/>
+          <polygon points="160,175 178,140 196,175" fill="#111208"/>
+          <polygon points="195,175 215,130 235,175" fill="#0d0905"/>
+          <polygon points="230,175 248,135 266,175" fill="#111208"/>
+          <polygon points="265,175 285,128 305,175" fill="#0d0905"/>
+          <polygon points="300,175 320,132 340,175" fill="#111208"/>
+          <polygon points="335,175 355,138 375,175" fill="#0d0905"/>
+          <polygon points="370,175 390,130 410,175" fill="#111208"/>
+          <polygon points="405,175 425,135 445,175" fill="#0d0905"/>
+          <polygon points="440,175 460,128 480,175" fill="#111208"/>
+          <polygon points="475,175 495,133 515,175" fill="#0d0905"/>
+          <polygon points="510,175 530,140 550,175" fill="#111208"/>
+          <polygon points="545,175 565,136 585,175" fill="#0d0905"/>
+          <!-- Lantern-fruit glow in trees -->
+          <circle cx="88" cy="148" r="4" fill="#ff9a2e" opacity="0.7"/>
+          <circle cx="148" cy="142" r="3" fill="#ffd580" opacity="0.6"/>
+          <circle cx="215" cy="145" r="4.5" fill="#ff9a2e" opacity="0.8"/>
+          <circle cx="285" cy="140" r="3.5" fill="#ffd580" opacity="0.7"/>
+          <circle cx="355" cy="147" r="4" fill="#ff9a2e" opacity="0.7"/>
+          <circle cx="425" cy="143" r="3" fill="#ffd580" opacity="0.6"/>
+          <circle cx="495" cy="146" r="4.5" fill="#ff9a2e" opacity="0.8"/>
+          <!-- Glow halos -->
+          <circle cx="88" cy="148" r="10" fill="#ff9a2e" opacity="0.15"/>
+          <circle cx="215" cy="145" r="12" fill="#ff9a2e" opacity="0.15"/>
+          <circle cx="355" cy="147" r="10" fill="#ff9a2e" opacity="0.15"/>
+          <circle cx="495" cy="146" r="12" fill="#ff9a2e" opacity="0.15"/>
+          <!-- Village lights -->
+          <rect x="230" y="218" width="30" height="40" rx="2" fill="#1a1008" stroke="#c47c2b" stroke-width="0.5"/>
+          <rect x="270" y="210" width="40" height="48" rx="2" fill="#1a1008" stroke="#c47c2b" stroke-width="0.5"/>
+          <rect x="320" y="220" width="28" height="38" rx="2" fill="#1a1008" stroke="#c47c2b" stroke-width="0.5"/>
+          <!-- Window glows -->
+          <rect x="236" y="225" width="8" height="6" fill="#ffd580" opacity="0.7"/>
+          <rect x="276" y="220" width="8" height="6" fill="#ffd580" opacity="0.7"/>
+          <rect x="290" y="220" width="8" height="6" fill="#ff9a2e" opacity="0.6"/>
+          <rect x="326" y="228" width="8" height="6" fill="#ffd580" opacity="0.7"/>
+          <!-- Fireflies -->
+          <circle cx="180" cy="195" r="1.5" fill="#ffd580" opacity="0.9"/>
+          <circle cx="195" cy="210" r="1" fill="#ffd580" opacity="0.7"/>
+          <circle cx="400" cy="198" r="1.5" fill="#ffd580" opacity="0.9"/>
+          <circle cx="420" cy="215" r="1" fill="#ffd580" opacity="0.7"/>
+          <circle cx="440" cy="200" r="1.2" fill="#ffd580" opacity="0.8"/>
+          <!-- Title text area -->
+          <rect x="100" y="60" width="400" height="100" rx="4" fill="rgba(26,15,8,0.7)"/>
+          <text x="300" y="102" font-family="serif" font-size="28" fill="#ffd580" text-anchor="middle" letter-spacing="2">Lanternwood</text>
+          <text x="300" y="130" font-family="serif" font-size="18" fill="#e8a94a" text-anchor="middle" letter-spacing="4">Adventures</text>
+          <text x="300" y="150" font-family="sans-serif" font-size="10" fill="rgba(245,234,214,0.5)" text-anchor="middle" letter-spacing="3">A COSY FAMILY RPG</text>
+        </svg>
+
+        <div class="cover-subtitle">A kid-friendly, rules-light fantasy role-playing game using only d6s</div>
+      </div>
+
+      <div class="intro-narrative">
+        <p>The mountains rise in the east like sleeping giants, their peaks wrapped in soft cloud. Below them, ancient forests stretch for miles, full of rustling leaves and the smell of pine and rain. Streams wind down through mossy valleys, past standing stones and twisted old oaks, into a world that feels both wild and wonderfully safe.</p>
+        <p>Follow a path through the trees. The forest thins. Warm light spills between the branches. And there it is: a village of wooden cabins and thatched roofs, smoke curling from chimneys, a baker's window full of pies. Children run between the market stalls. Someone is playing a fiddle somewhere nearby.</p>
+        <p>At a table outside the bakery, a ranger in a travel-worn green cloak leans forward across a hand-drawn map. "The lantern-fruit trail," she says. "If the goblins took it that way, they'll have crossed the Lonely Bridge by now."</p>
+        <p>"So we follow." The wizard looks up, a smudge of blue ink on her nose. "That's what we do, isn't it?" The ranger smiles. "That's what we do."</p>
+        <p style="text-align:center; font-size:16px;"><em>Somewhere, an adventure is waiting. What will yours be?</em></p>
+      </div>
+
+      <div class="ornament">✦ ✦ ✦</div>
+
+      <h2 class="section-title">How to Use This Rulebook</h2>
+      <p>Use the sidebar to navigate between sections. New players should start at <strong>Section 1</strong> and work through to Section 4 before building their first hero. GMs should read Sections 12 and 13 before the first session.</p>
+      <p>The <strong>dice button</strong> in the top right corner opens a dice roller for any time you need a quick roll. The <strong>Adventure Generator</strong> in Section 15 will create an instant quest with a few clicks.</p>
+      <p>Section 27 contains an interactive character sheet you can fill in directly on screen.</p>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S1: WHAT IS RPG -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s1">
+      <div class="section-badge">Section 1</div>
+      <h1 class="page-title">What is Role-Playing?</h1>
+      <p>Role-playing games (RPGs) are shared storytelling experiences, where everyone gets a chance to shape the story and play the way they want to.</p>
+      <p>Think of it as a group adventure story that you all make up together as you go. There is no script, no board to finish, and no single right answer. Everyone brings their imagination and sees what happens.</p>
+      <p>The easiest way to play is for one person to be the <strong>Game Master (GM)</strong>. The GM sets the scenes, plays the world and its creatures, and asks the most important question in the whole game:</p>
+      <div class="play-quote"><em>"What do you do?"</em></div>
+      <p>Everyone else plays a <strong>Hero</strong>, a character of their own invention with a name, a personality, and a small set of abilities that help them face whatever the world throws at them.</p>
+
+      <div class="rule-box">
+        <h4>In Lanternwood Adventures</h4>
+        <ul class="book-list">
+          <li><strong>Players</strong> each create a Hero. They say what their heroes try to do, think, and feel.</li>
+          <li><strong>The Game Master (GM)</strong> sets scenes, plays the world and its creatures, and asks: "What do you do?"</li>
+          <li><strong>Dice</strong> decide outcomes when things are uncertain.</li>
+        </ul>
+      </div>
+
+      <p>There is no single way to play. Some kids love make-believe and voices; others enjoy puzzles, maps, and dice. There is no winning or losing — just fun, creative adventures together.</p>
+      <p>You can also play without a GM, letting the dice and the random tables tell the story together. Lanternwood Adventures supports both styles.</p>
+
+      <h3 class="sub-title">Two Ways to Play</h3>
+      <div class="cheat-grid">
+        <div class="cheat-card">
+          <h4>Guided Story</h4>
+          <p>The GM prepares three to five scenes: hook → journey → problem → triumph. Good for first sessions.</p>
+        </div>
+        <div class="cheat-card">
+          <h4>Wander & Discover</h4>
+          <p>Put a goal on your 6×6 map, roam freely, and roll on the tables to see what you find.</p>
+        </div>
+      </div>
+
+      <div class="play-quote">
+        <span class="speaker">GM:</span> "The baker's recipe was stolen! The goblins ran across the Lonely Bridge. What do you do?"<br>
+        <span class="speaker">Player:</span> "We follow the flour footprints and ask the bridge troll for directions."
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S2: COZY REALMS -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s2">
+      <div class="section-badge">Section 2</div>
+      <h1 class="page-title">Welcome to the Cozy Realms</h1>
+      <p>A bright, friendly fantasy world with small perils and big hearts.</p>
+      <p>The Cozy Realms are whatever you imagine. They can persist from one session to the next, growing richer with each adventure, or they can reset every time and feel fresh and new. You are the mapmaker here.</p>
+
+      <h3 class="sub-title">Regions</h3>
+      <div class="region-grid">
+        <div class="region-card">
+          <div class="region-name">🌳 Oakendell</div>
+          <div class="region-desc">Warm woodlands, treehouses, pies cooling on windowsills.</div>
+        </div>
+        <div class="region-card">
+          <div class="region-name">⛰ Moonstep Hills</div>
+          <div class="region-desc">Chalk paths, standing stones, sheep that wander into dungeons.</div>
+        </div>
+        <div class="region-card">
+          <div class="region-name">🏮 Glimmerfen</div>
+          <div class="region-desc">Lantern-lit boardwalks, kind witches, will-o-wisps who like company.</div>
+        </div>
+        <div class="region-card">
+          <div class="region-name">🗼 Starfall Ruins</div>
+          <div class="region-desc">Mossy towers and mirror-pools where old magic hums softly.</div>
+        </div>
+        <div class="region-card">
+          <div class="region-name">🛤 The Greenway</div>
+          <div class="region-desc">A ribbon road and hedgerows, patrolled by helpful Rangers.</div>
+        </div>
+        <div class="region-card">
+          <div class="region-name">✨ Lanternwood</div>
+          <div class="region-desc">A twilight forest where glowing lantern-fruit hangs from ancient trees. Fireflies float like stars beneath the canopy.</div>
+        </div>
+      </div>
+
+      <h3 class="sub-title">Friendly Faces</h3>
+      <p>A handful of recurring characters to bring the world to life: <strong>Baker Brindle</strong> (knows everyone), <strong>Tinker Nix</strong> (fixes anything), <strong>Owly Sage</strong> (wise advice, usually delivered mid-nap), <strong>Captain Pebble</strong> (dwarf ferryman with a gift for tall tales), <strong>Watchman Brannighan</strong> (gruff but loyal), <strong>Emily Brodford</strong> (a trickster pixie who means well), <strong>Makki Bukaro</strong> (a Lanternwood Ranger and excellent whistler).</p>
+
+      <h3 class="sub-title">Gentle Frictions</h3>
+      <p>The Cozy Realms are not dangerous, but they are not always easy. Bridge troll tolls, overgrown roots across the path, Buttoncap goblin pranks, and the occasional grumpy Redcap coven are just some of the small adventures waiting around every corner.</p>
+
+      <div class="play-quote">
+        <span class="speaker">GM:</span> "The lantern-fruit glow like stars between the branches. The path splits. Warm wind from the left, the smell of pies from the right."<br>
+        <span class="speaker">Player:</span> "I close my eyes and listen for music to guide us."
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S3: WHAT YOU NEED -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s3">
+      <div class="section-badge">Section 3</div>
+      <h1 class="page-title">What You Need & Safety First</h1>
+
+      <div class="cheat-grid">
+        <div class="cheat-card">
+          <h4>👥 Who</h4>
+          <p>Two to four players. One adult or older child as GM, plus kids. Ages six and up. Similar ages work best.</p>
+        </div>
+        <div class="cheat-card">
+          <h4>⏱ How Long</h4>
+          <p>Thirty to sixty minutes per adventure. A great length for young players.</p>
+        </div>
+        <div class="cheat-card">
+          <h4>🎲 Dice</h4>
+          <p>At least two six-sided dice (2d6). The dice roller above can substitute in a pinch.</p>
+        </div>
+        <div class="cheat-card">
+          <h4>📝 Bits</h4>
+          <p>Paper, pencils, this rulebook, and tokens (coins or sweets) for HP or treasure.</p>
+        </div>
+      </div>
+
+      <h3 class="sub-title">Kid-Friendly Safety Tools</h3>
+      <p>These four tools help everyone feel safe and have fun. Talk about them before the first session.</p>
+
+      <div class="safety-grid">
+        <div class="safety-card">
+          <div class="safety-emoji">⏸</div>
+          <div class="safety-name">Time-Out</div>
+          <div class="safety-desc">Anyone can say "pause" at any time to stop and talk. No questions asked.</div>
+        </div>
+        <div class="safety-card">
+          <div class="safety-emoji">🔄</div>
+          <div class="safety-name">Skip / Swap</div>
+          <div class="safety-desc">If something feels too scary, swap it for something silly or softer.</div>
+        </div>
+        <div class="safety-card">
+          <div class="safety-emoji">⏪</div>
+          <div class="safety-name">Redo</div>
+          <div class="safety-desc">Did not like how that went? Rewind and try a different idea.</div>
+        </div>
+        <div class="safety-card">
+          <div class="safety-emoji">🤝</div>
+          <div class="safety-name">Share</div>
+          <div class="safety-desc">Try to give everyone a chance to speak so no one is left out.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S4: QUICK START -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s4">
+      <div class="section-badge">Section 4</div>
+      <h1 class="page-title">How to Play in 10 Minutes</h1>
+      <p>This section gets you playing straight away. Full details are in the sections that follow.</p>
+
+      <div class="steps">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Make a Hero</h4>
+            <p>Choose a Class (Warrior, Wizard, Rogue, Healer, or Ranger), pick two Traits, assign +1, +1, and 0 to your three Stats (Strength, Dexterity, Mind), write HP 8, then choose a favourite item or spell.</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Learn the Core Roll</h4>
+            <p>When something is uncertain, roll 2d6 + the most relevant Stat and compare to a Target Number (TN). If a Trait helps, roll 3d6 and keep the two highest (advantage).</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Start an Adventure</h4>
+            <p>Roll once on each Adventure Generator table (Section 15): Action + Target + Location. That is your quest. Draw a 6×6 hex grid, roll your Start and Goal hexes, then explore.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="sub-title">Target Numbers at a Glance</h3>
+      <div class="tn-strip">
+        <div class="tn-pill"><span class="tn-label">Easy</span><span class="tn-num">5</span></div>
+        <div class="tn-pill"><span class="tn-label">Normal</span><span class="tn-num">7</span></div>
+        <div class="tn-pill"><span class="tn-label">Hard</span><span class="tn-num">9</span></div>
+        <div class="tn-pill"><span class="tn-label">Very Hard</span><span class="tn-num">11</span></div>
+      </div>
+
+      <div class="play-quote">
+        <span class="speaker">GM:</span> "Ranger, you spot two sets of tracks: tiny goblin feet and wagon wheels. What do you do?"<br>
+        <span class="speaker">Ranger:</span> "Follow the wagon wheels. I want to see where they lead."
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S5: CHARACTERS -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s5">
+      <div class="section-badge">Section 5</div>
+      <h1 class="page-title">Character Creation</h1>
+      <p>Your Hero is your voice in the story. They are brave, curious, and probably a little bit odd in a wonderful way. They might be a quick-fingered Rogue who grew up among market stalls, a Healer who talks to plants, or a Warrior who cries at sunsets.</p>
+      <p>Your character is one of the two great engines of the story. The world the GM describes is the other. In between, your choices, your ideas, and your dice rolls create something neither of you planned.</p>
+
+      <h3 class="sub-title">Creation Steps</h3>
+      <div class="steps">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-content"><h4>Name & Class / Race</h4><p>See Section 6 for classes. Race is optional — pick one or make something up entirely.</p></div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-content"><h4>Pick Two Traits</h4><p>Traits are what makes your hero <em>them</em>. Examples: Brave, Animal Friend, Good at Climbing, Star-Watcher. Roll d66 or choose from Section 7.</p></div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-content"><h4>Assign Stats</h4><p>Distribute +1, +1, and 0 across your three stats: <strong>Strength</strong> (fighting, lifting), <strong>Dexterity</strong> (sneaking, dodging), <strong>Mind</strong> (magic, puzzles, knowledge).</p></div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <div class="step-content"><h4>Starting HP: 8</h4><p>Mark your hit points on your character sheet. Tokens or a pencil tracker both work.</p></div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">5</div>
+          <div class="step-content"><h4>Gear</h4><p>One useful item: a lantern, a rope, lockpicks, herbs, or a warm pie.</p></div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">6</div>
+          <div class="step-content"><h4>Spells (Wizard / Healer only)</h4><p>Pick three from the spell lists in Section 11.</p></div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">7</div>
+          <div class="step-content"><h4>Draw Your Hero</h4><p>Sketch them in the Notes box on your sheet. It does not have to be good. That is half the fun.</p></div>
+        </div>
+      </div>
+
+      <h3 class="sub-title">Progression</h3>
+      <p>Heroes grow across sessions, just as we do.</p>
+      <ul class="book-list">
+        <li>Survive an adventure: <strong>+1 HP</strong>.</li>
+        <li>Do something heroic or kind (GM decides, or the table agrees): <strong>+1 Trait</strong>.</li>
+        <li>Complete every three adventures: raise one Stat by +1 (maximum +2).</li>
+      </ul>
+
+      <div class="play-quote">
+        <span class="speaker">Player:</span> "Can my trait be 'Kind to Animals'?"<br>
+        <span class="speaker">GM:</span> "Yes. That will give you advantage whenever you are dealing with creatures."
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S6: CLASSES & RACES -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s6">
+      <div class="section-badge">Section 6</div>
+      <h1 class="page-title">Classes & Fantasy Races</h1>
+      <p>A class is a lens, not a cage. It gives your hero flavour and helps you decide how they might approach a problem. Classes make no mechanical difference to the rules — a Wizard and a Warrior both roll 2d6 + the right Stat. The difference is in how you tell the story.</p>
+
+      <h3 class="sub-title">Classes</h3>
+      <div class="class-grid">
+        <div class="class-card"><div class="class-emoji">⚔️</div><div class="class-name">Warrior</div><div class="class-desc">Brave, physical, good with weapons and staying power.</div></div>
+        <div class="class-card"><div class="class-emoji">🔮</div><div class="class-name">Wizard</div><div class="class-desc">Clever, curious, deals in spells, books, and knowledge.</div></div>
+        <div class="class-card"><div class="class-emoji">🗝️</div><div class="class-name">Rogue</div><div class="class-desc">Quick, sneaky, skilled with locks, tricks, and fast escapes.</div></div>
+        <div class="class-card"><div class="class-emoji">🌿</div><div class="class-name">Healer</div><div class="class-desc">Kind, caring, uses healing and blessings to help others.</div></div>
+        <div class="class-card"><div class="class-emoji">🏹</div><div class="class-name">Ranger</div><div class="class-desc">Forest-born, skilled with bows, animals, and finding the way.</div></div>
+      </div>
+
+      <h3 class="sub-title">Races (Optional)</h3>
+      <div class="class-grid">
+        <div class="class-card"><div class="class-emoji">🧑</div><div class="class-name">Human</div><div class="class-desc">Adaptable and determined.</div></div>
+        <div class="class-card"><div class="class-emoji">🧝</div><div class="class-name">Elf</div><div class="class-desc">Graceful, loves nature and music.</div></div>
+        <div class="class-card"><div class="class-emoji">⛏️</div><div class="class-name">Dwarf</div><div class="class-desc">Sturdy, loves caves, hammers, and treasure.</div></div>
+        <div class="class-card"><div class="class-emoji">🍀</div><div class="class-name">Halfling</div><div class="class-desc">Small, cheerful, loves food and comfort.</div></div>
+        <div class="class-card"><div class="class-emoji">💪</div><div class="class-name">Friendly Orc</div><div class="class-desc">Strong, loud, and brave.</div></div>
+        <div class="class-card"><div class="class-emoji">⚙️</div><div class="class-name">Gnome</div><div class="class-desc">Small tinkerer, loves making tiny machines.</div></div>
+        <div class="class-card"><div class="class-emoji">🧚</div><div class="class-name">Pixie / Fairy</div><div class="class-desc">Tiny tricksters who love jokes and singing.</div></div>
+      </div>
+
+      <h3 class="sub-title">Drop the Labels Entirely</h3>
+      <p>You do not have to use class or race at all. Kids can play a vet, a pirate, a robot owl, a mouse musician, or a brave baker. Some ideas: <strong>Animal people</strong> (Cat, Raccoon, Goat, Toad, Otter), <strong>Storybook archetypes</strong> (the curious inventor, the travelling merchant), <strong>Jobs</strong> (baker, mechanic, lighthouse keeper). Imagination rules.</p>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S7: NAMES & TRAITS -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s7">
+      <div class="section-badge">Section 7</div>
+      <h1 class="page-title">Names & Traits (d66)</h1>
+
+      <div class="d66-box">
+        <p>Roll two six-sided dice. The <strong>first die</strong> is the tens digit, the <strong>second die</strong> is the units digit. A roll of 3 and 4 gives you 34. A roll of 1 and 1 gives you 11. This produces 36 possible results (11–66, skipping any result that would need a 7 or higher as either digit).</p>
+      </div>
+
+      <h3 class="sub-title">Hero Names (d66)</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th>d66</th><th>Name</th><th>d66</th><th>Name</th><th>d66</th><th>Name</th><th>d66</th><th>Name</th><th>d66</th><th>Name</th><th>d66</th><th>Name</th></tr>
+          <tr><td>11</td><td>Arin</td><td>21</td><td>Gilda</td><td>31</td><td>Mira</td><td>41</td><td>Ivy</td><td>51</td><td>Orin</td><td>61</td><td>Una</td></tr>
+          <tr><td>12</td><td>Bramble</td><td>22</td><td>Harlow</td><td>32</td><td>Nilo</td><td>42</td><td>Jasper</td><td>52</td><td>Poppy</td><td>62</td><td>Veyra</td></tr>
+          <tr><td>13</td><td>Cora</td><td>23</td><td>Isolde</td><td>33</td><td>Oswin</td><td>43</td><td>Kestrel</td><td>53</td><td>Quin</td><td>63</td><td>Wren</td></tr>
+          <tr><td>14</td><td>Dain</td><td>24</td><td>Jory</td><td>34</td><td>Petra</td><td>44</td><td>Lila</td><td>54</td><td>Rowan</td><td>64</td><td>Xander</td></tr>
+          <tr><td>15</td><td>Elric</td><td>25</td><td>Kael</td><td>35</td><td>Quill</td><td>45</td><td>Milo</td><td>55</td><td>Sylvie</td><td>65</td><td>Yara</td></tr>
+          <tr><td>16</td><td>Fenn</td><td>26</td><td>Leif</td><td>36</td><td>Runa</td><td>46</td><td>Nira</td><td>56</td><td>Thorne</td><td>66</td><td>Zephyr</td></tr>
+        </table>
+      </div>
+
+      <h3 class="sub-title">Traits (d66)</h3>
+      <p>Traits are the things that make your hero <em>them</em>. A Trait applies whenever it would logically help — when it does, you roll 3d6 and keep the two highest dice (advantage). Start with two Traits and earn more as your hero grows.</p>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Roll</th><th>Trait</th><th>Roll</th><th>Trait</th><th>Roll</th><th>Trait</th></tr>
+          <tr><td>11</td><td>Brave</td><td>31</td><td>Storyteller</td><td>51</td><td>Kind to Strangers</td></tr>
+          <tr><td>12</td><td>Sneaky</td><td>32</td><td>Gentle Healer</td><td>52</td><td>Loves Maps</td></tr>
+          <tr><td>13</td><td>Animal Friend</td><td>33</td><td>Puzzle Solver</td><td>53</td><td>Good Memory</td></tr>
+          <tr><td>14</td><td>Strong</td><td>34</td><td>Collector</td><td>54</td><td>Tinkerer</td></tr>
+          <tr><td>15</td><td>Lucky</td><td>35</td><td>Star-Watcher</td><td>55</td><td>Silly Dancer</td></tr>
+          <tr><td>16</td><td>Curious</td><td>36</td><td>Bold</td><td>56</td><td>Night Owl</td></tr>
+          <tr><td>21</td><td>Caring</td><td>41</td><td>Good at Climbing</td><td>61</td><td>Big Appetite</td></tr>
+          <tr><td>22</td><td>Watchful</td><td>42</td><td>Fast Runner</td><td>62</td><td>Loyal</td></tr>
+          <tr><td>23</td><td>Fearless</td><td>43</td><td>Book Smart</td><td>63</td><td>Honest</td></tr>
+          <tr><td>24</td><td>Riddle Lover</td><td>44</td><td>Musical</td><td>64</td><td>Secretive</td></tr>
+          <tr><td>25</td><td>Quick Learner</td><td>45</td><td>Joke Teller</td><td>65</td><td>Inventive</td></tr>
+          <tr><td>26</td><td>Good at Hiding</td><td>46</td><td>Stubborn</td><td>66</td><td>Always Smiling</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S8: CORE RULES -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s8">
+      <div class="section-badge">Section 8</div>
+      <h1 class="page-title">Core Rules</h1>
+      <p>Rolls happen when an outcome is uncertain and the stakes matter. If a hero is doing something straightforward, there is no need to roll. Keep the dice for moments that could genuinely go either way.</p>
+
+      <div class="rule-box">
+        <h4>The Roll</h4>
+        <ul class="book-list">
+          <li><strong>Roll:</strong> 2d6 + the most relevant Stat vs a Target Number (TN).</li>
+          <li><strong>Traits:</strong> if a Trait helps, roll 3d6 and keep the two highest dice (advantage).</li>
+          <li><strong>Teamwork:</strong> a second hero helping gives +1 to the roll, or advantage at the GM's choice.</li>
+        </ul>
+      </div>
+
+      <h3 class="sub-title">Outcomes</h3>
+      <div class="cheat-grid">
+        <div class="cheat-card" style="border-color: var(--moss)">
+          <h4 style="color: var(--moss)">✓ Success</h4>
+          <p>You meet or beat the TN. It works. You do it.</p>
+        </div>
+        <div class="cheat-card" style="border-color: var(--amber)">
+          <h4>≈ Close Miss</h4>
+          <p>You miss by exactly 1. You succeed, but with a small twist (see Section 9).</p>
+        </div>
+        <div class="cheat-card" style="border-color: var(--rose)">
+          <h4 style="color: var(--rose)">✗ Failure</h4>
+          <p>You miss by 2 or more. A complication or setback occurs — but the story keeps moving.</p>
+        </div>
+        <div class="cheat-card">
+          <h4>🍀 Luck Token</h4>
+          <p>One per session. Spend to reroll one die, or to turn a failure into a Close Miss.</p>
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <p>A failure does not mean "nothing happens." It means something happens that makes things more complicated. The door opens but a guard hears it. The spell works, but the wrong person noticed. Keep the story moving. Players who feel momentum stay engaged — this is called <strong>Failing Forward</strong>.</p>
+      </div>
+
+      <div class="play-quote">
+        <span class="speaker">GM:</span> "You sneak past the sleeping boar. Roll 2d6 + Dex."<br>
+        <span class="speaker">Rogue:</span> "I'm Good at Hiding. Advantage?"<br>
+        <span class="speaker">GM:</span> "Yes. Roll 3d6 and keep the best two."
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S9: CONFLICT TYPES -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s9">
+      <div class="section-badge">Section 9</div>
+      <h1 class="page-title">Conflict Types & Success With Twist</h1>
+      <p>Not every challenge is a fight, and not every roll is pass or fail. Lanternwood Adventures offers three ways to frame a tricky situation.</p>
+
+      <div class="rule-box">
+        <h4>Tricky Task</h4>
+        <p>A single roll. Succeed, close miss, or fail. Good for most situations.</p>
+      </div>
+
+      <div class="rule-box">
+        <h4>Extended Challenge (Optional)</h4>
+        <p>A race to <strong>three successes before two setbacks</strong>. Use this for chases, calming a crowd, building a raft, or crossing a wobbly bridge. Each player can attempt one roll per beat, narrating what their hero tries. On a close miss, count it as a success but add a small twist. First to three wins or two losses ends the challenge.</p>
+      </div>
+
+      <div class="rule-box">
+        <h4>Friendship Hearts (Optional)</h4>
+        <p>Some creatures have <strong>three Hearts</strong> rather than HP. Each act of kindness, respect, or clever empathy fills one Heart. At three Hearts, the encounter ends peacefully. Works best for creatures that are misunderstood or lonely rather than genuinely threatening.</p>
+      </div>
+
+      <h3 class="sub-title">Success With Twist</h3>
+      <p>When a roll misses by exactly one, the hero succeeds but must choose (or the GM picks) one small complication:</p>
+      <ul class="book-list">
+        <li>Lose or scuff an item</li>
+        <li>Take 1 HP "Tired"</li>
+        <li>Attract unwanted attention</li>
+        <li>Owe a promise or favour</li>
+        <li>Time passes (it is dusk now)</li>
+        <li>Get separated briefly</li>
+        <li>Spend a snack</li>
+      </ul>
+
+      <div class="play-quote">
+        <span class="speaker">GM:</span> "You pick the lock. Success, but your sleeve catches in the ivy. You leave a ribbon behind."<br>
+        <span class="speaker">Wizard:</span> "I leave it as a marker. We can find our way back."
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S10: COMBAT -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s10">
+      <div class="section-badge">Section 10</div>
+      <h1 class="page-title">Conflict & Combat</h1>
+      <p>Combat in Lanternwood Adventures is fast, creative, and rarely lethal. The goal is to resolve the conflict, not to grind enemies down.</p>
+
+      <div class="rule-box">
+        <h4>Combat Rules</h4>
+        <ul class="book-list">
+          <li><strong>Turns:</strong> no strict initiative. Let each hero act once per round in a sensible order. Keep it moving.</li>
+          <li><strong>Attack:</strong> roll 2d6 + Strength (melee) or Dexterity (ranged) vs the foe's TN.</li>
+          <li><strong>Beat the TN:</strong> deal 1 damage to the foe.</li>
+          <li><strong>Fail:</strong> take 1 damage.</li>
+          <li><strong>Foe HP:</strong> most foes have 1–3 HP. Big bosses have 3–4 HP.</li>
+        </ul>
+      </div>
+
+      <h3 class="sub-title">Non-Violent Solutions</h3>
+      <p>Tricks, clever plans, and acts of kindness can always remove 1 HP from a foe, or end the conflict entirely if the GM agrees. A prank that humiliates a goblin, a riddle that confuses a troll, a kind gesture that gives a grumpy bear pause — these count.</p>
+
+      <h3 class="sub-title">Rest & Recovery</h3>
+      <div class="cheat-grid">
+        <div class="cheat-card">
+          <h4>Short Rest</h4>
+          <p>A safe pause of a few minutes: restore <strong>+1 HP</strong>.</p>
+        </div>
+        <div class="cheat-card">
+          <h4>Long Rest</h4>
+          <p>A full night's sleep: restore <strong>all HP</strong>.</p>
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <p><strong>Position (optional):</strong> a hero with a good plan rolls with advantage. A hero caught off-guard or in a bad spot takes a -1 penalty. <strong>Morale (optional):</strong> when an enemy is hurt or badly outnumbered, they may flee, surrender, or offer terms. This is almost always the better story.</p>
+      </div>
+
+      <div class="play-quote">
+        <span class="speaker">GM:</span> "The spriggan grabs your bag and bolts!"<br>
+        <span class="speaker">Ranger:</span> "I slide under the log and trip it with my staff."<br>
+        <span class="speaker">GM:</span> "Roll 2d6 + Dex vs TN 7. On a success, you deal 1 HP and grab your bag back."
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S11: MAGIC -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s11">
+      <div class="section-badge">Section 11</div>
+      <h1 class="page-title">Magic: Spells & Mishaps</h1>
+      <p>Magic in the Cozy Realms is vivid, playful, and sometimes mildly chaotic. It does not always behave, and that is part of the fun.</p>
+
+      <div class="rule-box">
+        <h4>Casting a Spell</h4>
+        <p>Wizards and Healers roll <strong>2d6 + Mind vs TN 7</strong>. On a success, the spell works as intended. On a failure, it fizzles harmlessly — or roll on the Mishap table for a delightful accident. Each spell can be cast <strong>once per scene</strong>.</p>
+      </div>
+
+      <h3 class="sub-title">Wizard Spells — choose 3</h3>
+      <div class="spell-grid">
+        <div class="spell-card"><div class="spell-name">Fire Bolt</div>Hurt a foe, or light small fires.</div>
+        <div class="spell-card"><div class="spell-name">Shield</div>You or a friend take no damage from the next attack.</div>
+        <div class="spell-card"><div class="spell-name">Light</div>Create bright light in darkness.</div>
+        <div class="spell-card"><div class="spell-name">Mage Hand</div>Move a small object at a distance.</div>
+        <div class="spell-card"><div class="spell-name">Sleepy Sand</div>Make a small creature drowsy.</div>
+        <div class="spell-card"><div class="spell-name">Feather Fall</div>Land softly from any height.</div>
+        <div class="spell-card"><div class="spell-name">Water Jet</div>Push, douse fire, or make slippery ground.</div>
+        <div class="spell-card"><div class="spell-name">Mending</div>Repair a small broken object.</div>
+        <div class="spell-card"><div class="spell-name">Invisibility</div>Brief; ends if you move quickly or speak.</div>
+        <div class="spell-card"><div class="spell-name">Detect Magic</div>See magical auras nearby.</div>
+        <div class="spell-card"><div class="spell-name">Bubble Shield</div>A floating bubble blocks one hit for any hero.</div>
+        <div class="spell-card"><div class="spell-name">Giggle Dust</div>Causes uncontrollable laughter for one round.</div>
+        <div class="spell-card"><div class="spell-name">Broom Ride</div>Short, slow flight.</div>
+        <div class="spell-card"><div class="spell-name">Stretchy Arms</div>Reach something just out of reach.</div>
+        <div class="spell-card"><div class="spell-name">Big Voice</div>Your voice carries clearly across a valley.</div>
+        <div class="spell-card"><div class="spell-name">Pocket World</div>Hide one small item safely in a magical pocket.</div>
+      </div>
+
+      <h3 class="sub-title">Healer Spells — choose 3</h3>
+      <div class="spell-grid">
+        <div class="spell-card healer"><div class="spell-name">Heal</div>Restore 1 HP to yourself or a hero you can touch.</div>
+        <div class="spell-card healer"><div class="spell-name">Greater Heal</div>Restore 2 HP (TN 9 to cast).</div>
+        <div class="spell-card healer"><div class="spell-name">Bless</div>Your next roll or a friend's next roll has advantage.</div>
+        <div class="spell-card healer"><div class="spell-name">Cure</div>Remove one condition (Tired, Frightened, Tangled).</div>
+        <div class="spell-card healer"><div class="spell-name">Calm</div>Soothe anger or fear in a creature or person.</div>
+        <div class="spell-card healer"><div class="spell-name">Protection</div>A hero gains +1 vs harm for the rest of the scene.</div>
+        <div class="spell-card healer"><div class="spell-name">Purify</div>Clean food or water; dispel a simple curse.</div>
+        <div class="spell-card healer"><div class="spell-name">Beacon</div>Create a glowing marker visible from far away.</div>
+        <div class="spell-card healer"><div class="spell-name">Nature's Ally</div>Call a small helpful animal to your side.</div>
+        <div class="spell-card healer"><div class="spell-name">Gentle Wind</div>Clear mist, or carry a whisper to a distant ear.</div>
+        <div class="spell-card healer"><div class="spell-name">Sanctuary</div>Enemies hesitate to attack you this round.</div>
+        <div class="spell-card healer"><div class="spell-name">Hug of Warmth</div>Restore 1 HP with a magical embrace.</div>
+        <div class="spell-card healer"><div class="spell-name">Sunbeam</div>Fill an area with warm, reassuring light.</div>
+        <div class="spell-card healer"><div class="spell-name">Grow Plant</div>Vines, flowers, or fruit appear on command.</div>
+        <div class="spell-card healer"><div class="spell-name">Mirror Water</div>Show a distant place in a bowl of still water.</div>
+        <div class="spell-card healer"><div class="spell-name">Rainbow Bridge</div>Create a short, sturdy bridge of coloured light.</div>
+      </div>
+
+      <h3 class="sub-title">Wholesome Mishaps (2d6)</h3>
+      <p>Mishaps are not punishments — they are invitations. A failed spell that rains glitter on everyone is a gift to the story. Lean into them.</p>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Roll</th><th>Mishap</th></tr>
+          <tr><td>2</td><td>A spectacular glitter sneeze covers everyone nearby</td></tr>
+          <tr><td>3</td><td>Your hair floofs up magnificently and will not go back</td></tr>
+          <tr><td>4</td><td>Tiny fireworks pop from your fingertips</td></tr>
+          <tr><td>5</td><td>Your voice echoes oddly for the rest of the scene</td></tr>
+          <tr><td>6</td><td>Everyone's shoes squeak loudly for ten minutes</td></tr>
+          <tr><td>7</td><td>Bubbles pour out of your sleeves</td></tr>
+          <tr><td>8</td><td>A small crowd of friendly moths arrives and refuses to leave</td></tr>
+          <tr><td>9</td><td>Hats swap with the nearest creature (willing or not)</td></tr>
+          <tr><td>10</td><td>Your pockets smell of cinnamon for the rest of the day</td></tr>
+          <tr><td>11</td><td>A polite ghost appears, offers tea, then wanders off</td></tr>
+          <tr><td>12</td><td>Glowing arrows appear and point confidently in the wrong direction</td></tr>
+        </table>
+      </div>
+
+      <div class="play-quote">
+        <span class="speaker">Wizard:</span> "I cast Invisibility and tiptoe toward the goblin camp."<br>
+        <span class="speaker">GM:</span> "You fail. Roll on the mishap table."<br>
+        <span class="speaker">Wizard:</span> "A 3. My hair floofs up."<br>
+        <span class="speaker">GM:</span> "It is enormous. Majestic, even. The goblin blinks. Then he laughs."
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S12: GM GUIDANCE -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s12">
+      <div class="section-badge">Section 12</div>
+      <h1 class="page-title">Running the Game</h1>
+      <p>Being a GM for young players is one of the most rewarding things you can do at a table. You are not there to challenge them or to win. You are there to make their choices feel real and their victories feel earned.</p>
+
+      <h3 class="sub-title">Core Principles</h3>
+      <ul class="book-list">
+        <li><strong>Be a fan of the kids.</strong> Celebrate bold ideas, even strange ones.</li>
+        <li><strong>Ask, don't tell.</strong> "What do you do?" is your best move. Repeat it often.</li>
+        <li><strong>Make it real, not lethal.</strong> Prefer complications over punishment.</li>
+        <li><strong>Keep numbers behind the curtain.</strong> Show behaviour, not stats. "The troll looks worried."</li>
+        <li><strong>End on a win.</strong> Even a messy, last-second success is a better memory than a clean failure.</li>
+      </ul>
+
+      <h3 class="sub-title">Difficulty Dial</h3>
+      <div class="cheat-grid">
+        <div class="cheat-card">
+          <h4>New or Young Players</h4>
+          <p>Set TNs at 5–7, give advantage generously, let clever ideas count as automatic successes.</p>
+        </div>
+        <div class="cheat-card">
+          <h4>Confident Players</h4>
+          <p>Use TNs of 7–9, add more twists, let consequences land with more weight.</p>
+        </div>
+      </div>
+
+      <h3 class="sub-title">GM Soft Moves</h3>
+      <p>When you want to add tension without punishing anyone:</p>
+      <ul class="book-list">
+        <li><strong>Show a sign of trouble:</strong> "You hear boots on the bridge above you."</li>
+        <li><strong>Offer a risky choice:</strong> "The quiet path takes an hour. The quick path goes past the bees."</li>
+        <li><strong>Separate the party harmlessly:</strong> "The bridge holds four of you, but not all at once."</li>
+        <li><strong>Reveal a detail:</strong> "The symbol on the door matches the one on the baker's apron."</li>
+        <li><strong>Put someone in a spot:</strong> "The cart wheel snaps at the ford."</li>
+        <li><strong>Offer a bargain:</strong> "Pay a pastry toll, or answer a riddle."</li>
+        <li><strong>Bring back a friend:</strong> "The owl from the forest's edge lands on a nearby branch. She has a clue."</li>
+      </ul>
+
+      <h3 class="sub-title">Scene Ingredients (Pick Three)</h3>
+      <div class="safety-grid">
+        <div class="safety-card" style="border-color: var(--amber)">
+          <div class="safety-emoji">🏞</div>
+          <div class="safety-name" style="color: var(--amber)">Vivid Place</div>
+          <div class="safety-desc">Two or three sensory details that put players there.</div>
+        </div>
+        <div class="safety-card" style="border-color: var(--amber)">
+          <div class="safety-emoji">🎭</div>
+          <div class="safety-name" style="color: var(--amber)">Someone's Want</div>
+          <div class="safety-desc">An NPC who wants something the heroes can affect.</div>
+        </div>
+        <div class="safety-card" style="border-color: var(--amber)">
+          <div class="safety-emoji">❓</div>
+          <div class="safety-name" style="color: var(--amber)">A Question</div>
+          <div class="safety-desc">With no obvious answer, inviting player decisions.</div>
+        </div>
+        <div class="safety-card" style="border-color: var(--amber)">
+          <div class="safety-emoji">⚖️</div>
+          <div class="safety-name" style="color: var(--amber)">A Dilemma</div>
+          <div class="safety-desc">Two reasonable paths, each with different costs.</div>
+        </div>
+        <div class="safety-card" style="border-color: var(--amber)">
+          <div class="safety-emoji">🎁</div>
+          <div class="safety-name" style="color: var(--amber)">A Fun Prop</div>
+          <div class="safety-desc">Something someone will want to touch, use, or investigate.</div>
+        </div>
+        <div class="safety-card" style="border-color: var(--amber)">
+          <div class="safety-emoji">🕊</div>
+          <div class="safety-name" style="color: var(--amber)">Peaceful Exit</div>
+          <div class="safety-desc">A way to resolve the conflict without fighting.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S13: STEP BY STEP GM -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s13">
+      <div class="section-badge">Section 13</div>
+      <h1 class="page-title">Step-by-Step GM Guide</h1>
+
+      <div class="steps">
+        <div class="step-card"><div class="step-num">🏞</div><div class="step-content"><h4>Setting the Scene</h4><p>Open with two or three vivid details: a smell, a sound, a colour. Let players look around before anything happens. "The bakery is empty. Flour dust on the floor. The window is open. What do you do?"</p></div></div>
+        <div class="step-card"><div class="step-num">🔀</div><div class="step-content"><h4>Offering Options</h4><p>When players seem unsure, offer two or three possible paths — not the only paths, just a starting point. "You could follow the tracks, ask around the market, or check the river."</p></div></div>
+        <div class="step-card"><div class="step-num">⚖️</div><div class="step-content"><h4>Decision-Making</h4><p>Let the players decide. Your job is to make the consequences feel real and interesting, not to guide them toward a particular outcome.</p></div></div>
+        <div class="step-card"><div class="step-num">🧩</div><div class="step-content"><h4>Navigating Puzzles</h4><p>If a puzzle stumps the group, have an NPC offer a gentle nudge: "Owly Sage mutters something about the shape of the moon on the left-hand stone."</p></div></div>
+        <div class="step-card"><div class="step-num">⚔️</div><div class="step-content"><h4>Navigating Combat</h4><p>Keep it fast and visual. Ask players to describe what their hero does, not just what they roll. Always offer non-violent exits. "The goblins look nervous. One is edging toward the treeline."</p></div></div>
+        <div class="step-card"><div class="step-num">🗺</div><div class="step-content"><h4>Exploration</h4><p>Let players ask questions. Every question is an opportunity. "Yes, and..." or "Yes, but..." moves things forward. "No, but..." gives them a different way in.</p></div></div>
+        <div class="step-card"><div class="step-num">🤝</div><div class="step-content"><h4>Player Conflict</h4><p>Keep it light and use real-world kindness. "We all want everyone to have fun. What can both of you agree on?" If heroes genuinely disagree, let each player roll and use the best result.</p></div></div>
+        <div class="step-card"><div class="step-num">🚪</div><div class="step-content"><h4>Failing Forward</h4><p>A failed roll does not stop the story — it turns it. "You don't make it across the rope bridge, but you do land on a ledge with a door in the cliff face." Failure is a door, not a wall.</p></div></div>
+        <div class="step-card"><div class="step-num">🎭</div><div class="step-content"><h4>Playing NPCs</h4><p>Give each NPC one thing they want and one quirk. Keep them consistent. Let them change when players earn it. A troll who has been given a good joke might just become an ally.</p></div></div>
+        <div class="step-card"><div class="step-num">⭐</div><div class="step-content"><h4>Wrapping Up</h4><p>End with a moment of triumph or wonder. Then do <strong>Stars and Wishes</strong>: each person shares one favourite moment (a Star) and one thing to try next time (a Wish). Five minutes. Makes the next session better.</p></div></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S14: HEXCRAWL -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s14">
+      <div class="section-badge">Section 14</div>
+      <h1 class="page-title">Hexcrawl Procedure</h1>
+      <p>A hexcrawl is a way of exploring a map by moving from one hexagon to the next, discovering what is there as you go. In Lanternwood Adventures, it is not a gruelling march through hostile territory — it is a cosy wander with friends. You might stop for tea beside a waterfall, climb a tree to visit a fairy house, or stumble on a lost tortoise.</p>
+
+      <h3 class="sub-title">Setup</h3>
+      <p>Draw a 6×6 hex grid. Number rows 1–6 (north to south) and columns 1–6 (west to east). Roll your Start hex (1d6 row, 1d6 column) and your Goal hex the same way. If they land on the same hex, roll the Goal again.</p>
+
+      <h3 class="sub-title">Travel — Roll 1d6 per new hex</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Roll</th><th>Result</th></tr>
+          <tr><td>1–3</td><td>Empty: describe terrain, weather, or interesting details. No encounter.</td></tr>
+          <tr><td>4–5</td><td>Discovery: roll on the Discoveries table (Section 16, d66).</td></tr>
+          <tr><td>6</td><td>Key location or Fey Encounter: the GM places something important here.</td></tr>
+        </table>
+      </div>
+      <p>After three or four hexes, offer a short rest if it feels safe (+1 HP).</p>
+
+      <h3 class="sub-title">Weather — Roll 1d6 at the start of each day</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Roll</th><th>Weather</th><th>Roll</th><th>Weather</th></tr>
+          <tr><td>1</td><td>Fog</td><td>4</td><td>Windy</td></tr>
+          <tr><td>2</td><td>Rain</td><td>5</td><td>Sunny</td></tr>
+          <tr><td>3</td><td>Cloudy</td><td>6</td><td>Dramatic (storm by dusk)</td></tr>
+        </table>
+      </div>
+
+      <h3 class="sub-title">NPC Reactions (2d6, Optional)</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Roll</th><th>Reaction</th><th>Roll</th><th>Reaction</th></tr>
+          <tr><td>2–4</td><td>Hostile</td><td>10–11</td><td>Friendly</td></tr>
+          <tr><td>5–6</td><td>Wary</td><td>12</td><td>Helpful</td></tr>
+          <tr><td>7–9</td><td>Neutral</td><td></td><td></td></tr>
+        </table>
+      </div>
+
+      <div class="tip-box">
+        <p>If a key location is nearby on the map but the heroes are not quite there yet, a Fey Encounter is a lovely way to create a brief detour, add flavour, and build anticipation before the main event.</p>
+      </div>
+
+      <div class="play-quote">
+        <span class="speaker">GM:</span> "You crest a hill. The valley below glitters with fireflies. Roll a Discovery."<br>
+        <span class="speaker">Ranger:</span> "66!"<br>
+        <span class="speaker">GM:</span> "A hidden treasure hoard... but the fireflies are moving in a pattern. Something is watching."
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S15: ADVENTURE GENERATOR -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s15">
+      <div class="section-badge">Section 15</div>
+      <h1 class="page-title">Adventure Generators (2d6)</h1>
+      <p>Roll once on each table and combine for an instant quest. It will not always make perfect sense, and that is fine — let the odd combinations spark your imagination.</p>
+
+      <div class="generator-panel">
+        <h3 style="font-family: 'Cinzel Decorative', serif; font-size: 16px; margin-bottom: 12px;">Quest Generator</h3>
+        <div class="generator-result" id="gen-result">
+          <span style="color: var(--ink-light); font-style: italic; font-size: 14px;">Click the button to generate a quest</span>
+        </div>
+        <button class="gen-btn" onclick="generateQuest()">🎲 Generate Adventure</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 16px;">
+        <div>
+          <h3 class="sub-title">Actions (2d6)</h3>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Roll</th><th>Action</th></tr>
+              <tr><td>2</td><td>Rescue</td></tr><tr><td>3</td><td>Discover</td></tr>
+              <tr><td>4</td><td>Find</td></tr><tr><td>5</td><td>Explore</td></tr>
+              <tr><td>6</td><td>Recover</td></tr><tr><td>7</td><td>Protect</td></tr>
+              <tr><td>8</td><td>Escape</td></tr><tr><td>9</td><td>Defeat</td></tr>
+              <tr><td>10</td><td>Deliver</td></tr><tr><td>11</td><td>Mend</td></tr>
+              <tr><td>12</td><td>Befriend</td></tr>
+            </table>
+          </div>
+        </div>
+        <div>
+          <h3 class="sub-title">Targets (2d6)</h3>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Roll</th><th>Target</th></tr>
+              <tr><td>2</td><td>Stolen treasure</td></tr><tr><td>3</td><td>Wise old owl</td></tr>
+              <tr><td>4</td><td>Baker's recipe</td></tr><tr><td>5</td><td>Lost merchant</td></tr>
+              <tr><td>6</td><td>Magic crystal</td></tr><tr><td>7</td><td>Lost item / person</td></tr>
+              <tr><td>8</td><td>Cursed object</td></tr><tr><td>9</td><td>Goblin pranksters</td></tr>
+              <tr><td>10</td><td>Ancient map</td></tr><tr><td>11</td><td>Talking animal</td></tr>
+              <tr><td>12</td><td>Sleeping giant</td></tr>
+            </table>
+          </div>
+        </div>
+        <div>
+          <h3 class="sub-title">Locations (2d6)</h3>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Roll</th><th>Location</th></tr>
+              <tr><td>2</td><td>Deep forest</td></tr><tr><td>3</td><td>Mountain cave</td></tr>
+              <tr><td>4</td><td>Old watchtower</td></tr><tr><td>5</td><td>Underground ruin</td></tr>
+              <tr><td>6</td><td>Lonely bridge</td></tr><tr><td>7</td><td>Deserted village</td></tr>
+              <tr><td>8</td><td>Marshy fen</td></tr><tr><td>9</td><td>Abandoned mill</td></tr>
+              <tr><td>10</td><td>Crystal lake</td></tr><tr><td>11</td><td>Hidden valley</td></tr>
+              <tr><td>12</td><td>Stone circle</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S16: DISCOVERIES -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s16">
+      <div class="section-badge">Section 16</div>
+      <h1 class="page-title">Discoveries (d66)</h1>
+      <p>A Discovery is a moment of surprise and possibility. It might lead somewhere, open a door, answer a question, or simply delight. Not every Discovery needs to become a full encounter — some are just gifts. Let the players decide how much to engage.</p>
+      <div class="d66-box"><p>Roll two d6: first die = tens digit, second die = units digit. Range: 11–66.</p></div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Roll</th><th>Discovery</th><th>Roll</th><th>Discovery</th></tr>
+          <tr><td>11</td><td>Friendly hermit with useful advice</td><td>41</td><td>Cave with echoing noises</td></tr>
+          <tr><td>12</td><td>Travellers demanding a riddle-toll</td><td>42</td><td>Ancient statue half-buried</td></tr>
+          <tr><td>13</td><td>Hidden treasure chest (locked)</td><td>43</td><td>Merchant in trouble</td></tr>
+          <tr><td>14</td><td>Strange carved standing stones</td><td>44</td><td>Crossroads with three choices</td></tr>
+          <tr><td>15</td><td>Wild animal sitting in the path</td><td>45</td><td>Old campsite, bones and armour</td></tr>
+          <tr><td>16</td><td>Weather turns bad suddenly</td><td>46</td><td>Strange lights at night</td></tr>
+          <tr><td>21</td><td>Collapsed bridge; must find another way</td><td>51</td><td>Helpful animal guide</td></tr>
+          <tr><td>22</td><td>Singing birds with a clue in their song</td><td>52</td><td>Riddle carved into a stone</td></tr>
+          <tr><td>23</td><td>Travelling caravan (trade and gossip)</td><td>53</td><td>Bridge guarded by a troll</td></tr>
+          <tr><td>24</td><td>Abandoned campsite with clues</td><td>54</td><td>Overgrown garden with fruit</td></tr>
+          <tr><td>25</td><td>Mysterious footprints</td><td>55</td><td>Rope bridge across a chasm</td></tr>
+          <tr><td>26</td><td>Strange glowing mushrooms</td><td>56</td><td>Whispering voices in the trees</td></tr>
+          <tr><td>31</td><td>A lost child or pet looking for home</td><td>61</td><td>Old wizard wandering and confused</td></tr>
+          <tr><td>32</td><td>Trickster goblin pranksters</td><td>62</td><td>Friendly rival adventurers</td></tr>
+          <tr><td>33</td><td>Helpful spirit offering guidance</td><td>63</td><td>Giant's footprints, freshly made</td></tr>
+          <tr><td>34</td><td>Ruined shrine to a forgotten god</td><td>64</td><td>Secret tunnel or shortcut</td></tr>
+          <tr><td>35</td><td>Treasure map fragment</td><td>65</td><td>Sleeping dragon (do not wake it)</td></tr>
+          <tr><td>36</td><td>Magical spring (healing water)</td><td>66</td><td>Hidden treasure hoard</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S17: FEY ENCOUNTERS -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s17">
+      <div class="section-badge">Section 17</div>
+      <h1 class="page-title">Fey Encounters (d66)</h1>
+      <p>The Cozy Realms sit close to another world: one of old magic, impossible things, and creatures that do not follow ordinary rules. Fey encounters are moments of strangeness and wonder, not dangers to be overcome.</p>
+      <div class="tip-box">
+        <p>All entries in this table have been chosen to be playable with young children. Creatures from darker folklore (kelpie, banshee) appear here as gentled, curious versions — unusual and occasionally mischievous, but never truly threatening.</p>
+      </div>
+      <div class="d66-box"><p>Roll two d6: first die = tens digit, second die = units digit. Range: 11–66.</p></div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Roll</th><th>Encounter</th><th>Roll</th><th>Encounter</th></tr>
+          <tr><td>11</td><td>A circle of mushrooms whispers if you step inside</td><td>41</td><td>A will-o-wisp tries to lure you to a hidden glade</td></tr>
+          <tr><td>12</td><td>A tiny brownie offers to carry your packs</td><td>42</td><td>A goblin night market appears out of nowhere</td></tr>
+          <tr><td>13</td><td>Fairy lights lead to a hidden clearing</td><td>43</td><td>A grumpy troll sniffs from under a bridge</td></tr>
+          <tr><td>14</td><td>A tree spirit asks you to water its roots</td><td>44</td><td>A witch in a cosy hut offers a bargain</td></tr>
+          <tr><td>15</td><td>A hobgoblin tries to trade riddles</td><td>45</td><td>A cheerful sprite guards a buried pot of gold</td></tr>
+          <tr><td>16</td><td>A ghostly wail echoes — a friendly warning</td><td>46</td><td>A wandering minstrel carries old fey songs</td></tr>
+          <tr><td>21</td><td>A talking raven delivers a warning</td><td>51</td><td>A giant hare bounds across your path</td></tr>
+          <tr><td>22</td><td>A gnome tinkers with something extraordinary</td><td>52</td><td>Spriggans squabble over stolen toys</td></tr>
+          <tr><td>23</td><td>A faun plays music that makes you want to dance</td><td>53</td><td>A stone statue weeps real tears</td></tr>
+          <tr><td>24</td><td>Pixies steal one small item; want to trade for it back</td><td>54</td><td>A spirit hound follows you quietly</td></tr>
+          <tr><td>25</td><td>A water horse lingers near a stream, curious</td><td>55</td><td>A fairy ring transports you somewhere unexpected</td></tr>
+          <tr><td>26</td><td>A wise old owl shares a secret</td><td>56</td><td>A shadow with no owner mimics everything you do</td></tr>
+          <tr><td>31</td><td>A dryad asks you to protect her grove</td><td>61</td><td>A redcap is sharpening something; he seems bored</td></tr>
+          <tr><td>32</td><td>A pooka offers a mischievous ride</td><td>62</td><td>A stag with golden antlers appears at the forest edge</td></tr>
+          <tr><td>33</td><td>Dancing lights reveal an ancient ruin</td><td>63</td><td>A distant song carries a warning of fog ahead</td></tr>
+          <tr><td>34</td><td>A selkie rests by the river, watching the water</td><td>64</td><td>A trickster fox speaks entirely in riddles</td></tr>
+          <tr><td>35</td><td>A headless horseman gallops past without stopping</td><td>65</td><td>Thunder and hoofbeats in the sky — something vast passes over</td></tr>
+          <tr><td>36</td><td>A court elf requests a favour, politely but firmly</td><td>66</td><td>A fairy procession crosses your path; bow and let them pass</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S18: RUMOURS -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s18">
+      <div class="section-badge">Section 18</div>
+      <h1 class="page-title">Rumours, Town Tones & NPC Quirks</h1>
+      <p>Rumours give a town life before the heroes even ask a question. Not every rumour leads anywhere — some are just true, strange, and wonderful.</p>
+
+      <h3 class="sub-title">Cosy Rumours (d66)</h3>
+      <div class="d66-box"><p>Roll two d6: first die = tens digit, second die = units digit.</p></div>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Roll</th><th>Rumour</th><th>Roll</th><th>Rumour</th></tr>
+          <tr><td>11</td><td>An owl saw lights at the old mill</td><td>41</td><td>The bridge wants a fresh coat of paint</td></tr>
+          <tr><td>12</td><td>The river sings at dawn</td><td>42</td><td>Bees guard a golden honeycomb</td></tr>
+          <tr><td>13</td><td>A fox stole the mayor's sock</td><td>43</td><td>A path appears only at noon</td></tr>
+          <tr><td>14</td><td>Mushrooms formed a perfect arrow</td><td>44</td><td>The piper lost a tune he cannot find</td></tr>
+          <tr><td>15</td><td>Someone has been leaving pies at the shrine</td><td>45</td><td>An echo at the gorge says your name back</td></tr>
+          <tr><td>16</td><td>A bell rang at midnight with no one near it</td><td>46</td><td>Footprints end at a hollow tree trunk</td></tr>
+          <tr><td>21</td><td>A cart sank in the marsh last week</td><td>51</td><td>The ferries race again at sunset</td></tr>
+          <tr><td>22</td><td>A rainbow touched the stone circle</td><td>52</td><td>Someone has been swapping all the signposts</td></tr>
+          <tr><td>23</td><td>Bakers whisper of a secret spice</td><td>53</td><td>A haunted kettle will only boil tea</td></tr>
+          <tr><td>24</td><td>The dwarf ferryman lost his favourite hat</td><td>54</td><td>Boots have been marching with no feet inside them</td></tr>
+          <tr><td>25</td><td>An old map shows a door beneath the hill</td><td>55</td><td>A kind witch seeks someone brave and trustworthy</td></tr>
+          <tr><td>26</td><td>Lantern-fish are leaping tonight</td><td>56</td><td>The moon hid something in the reeds</td></tr>
+          <tr><td>31</td><td>Goblins have been rehearsing a play</td><td>61</td><td>A sunken bell tolls at low tide</td></tr>
+          <tr><td>32</td><td>A friendly giant needs help finding a chair</td><td>62</td><td>A sleeping dragon dreams of cakes</td></tr>
+          <tr><td>33</td><td>The ranger found silver arrows in a hollow</td><td>63</td><td>The queen's deer bow to anyone who laughs</td></tr>
+          <tr><td>34</td><td>A comet tail sparked above the lake last night</td><td>64</td><td>A ghost would like someone to tell it a bedtime story</td></tr>
+          <tr><td>35</td><td>The wind hums in the old stone towers</td><td>65</td><td>A fairy owes someone here a favour</td></tr>
+          <tr><td>36</td><td>A cat has been delivering letters tied to its collar</td><td>66</td><td>A star fell in the orchard and left a crater full of flowers</td></tr>
+        </table>
+      </div>
+
+      <h3 class="sub-title">Town Tone (2d6)</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Roll</th><th>Tone</th><th>Roll</th><th>Tone</th></tr>
+          <tr><td>2</td><td>Worried but helpful</td><td>7</td><td>Festival mood</td></tr>
+          <tr><td>3</td><td>Sleepy and slow</td><td>8</td><td>Curious about newcomers</td></tr>
+          <tr><td>4</td><td>Busy market day</td><td>9</td><td>Repairs underway everywhere</td></tr>
+          <tr><td>5</td><td>Soggy and cheerful</td><td>10</td><td>Expecting an important parade</td></tr>
+          <tr><td>6</td><td>Perfectly normal</td><td>11</td><td>Something important was lost</td></tr>
+          <tr><td></td><td></td><td>12</td><td>Proud and singing</td></tr>
+        </table>
+      </div>
+
+      <h3 class="sub-title">NPC Quirks (2d6)</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Roll</th><th>Quirk</th><th>Roll</th><th>Quirk</th></tr>
+          <tr><td>2</td><td>Collects buttons obsessively</td><td>7</td><td>Terrible liar, knows it</td></tr>
+          <tr><td>3</td><td>Genuinely terrified of geese</td><td>8</td><td>Laughs loudly at their own jokes</td></tr>
+          <tr><td>4</td><td>Rhymes badly and constantly</td><td>9</td><td>Gives stickers to everyone they meet</td></tr>
+          <tr><td>5</td><td>Pockets always full of string</td><td>10</td><td>Insists that hats bring luck</td></tr>
+          <tr><td>6</td><td>Always sketching something</td><td>11</td><td>Believes maps are the greatest treasure</td></tr>
+          <tr><td></td><td></td><td>12</td><td>Names every squirrel they see</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S19: NPCS -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s19">
+      <div class="section-badge">Section 19</div>
+      <h1 class="page-title">NPCs</h1>
+      <p>NPCs are everyone in the world who is not a hero. The GM plays them. They bring the world to life with personalities, voices, and small agendas. The best NPCs are friends, rivals, guides, and comic relief — sometimes all at once.</p>
+
+      <div class="rule-box">
+        <h4>How to Play NPCs Well</h4>
+        <ul class="book-list">
+          <li>Give them <strong>one thing they want</strong>: pies, hats, respect, company, someone to talk to.</li>
+          <li>Add <strong>one quirk</strong>: rhymes badly, afraid of geese, pockets full of buttons.</li>
+          <li>Keep them <strong>simple</strong>: one or two traits is all you need.</li>
+          <li>Use them to offer <strong>choices, rumours, or help</strong>.</li>
+          <li><strong>Let kids influence them.</strong> A kind word or a clever idea can genuinely change an NPC's mind.</li>
+        </ul>
+      </div>
+
+      <div class="play-quote">
+        <span class="speaker">GM:</span> "The ferryman adjusts his crooked hat. 'Pay me in riddles or in songs,' he says. What do you do?"
+      </div>
+
+      <h3 class="sub-title">Example NPCs</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Name</th><th>Role</th><th>Quirk</th><th>Want</th></tr>
+          <tr><td>Baker Brindle</td><td>Kindly village baker</td><td>Always humming softly</td><td>Everyone well-fed</td></tr>
+          <tr><td>Captain Pebble</td><td>Dwarf ferryman</td><td>Tall tales, enormous boots</td><td>A new hat</td></tr>
+          <tr><td>Owly Sage</td><td>Wise old owl</td><td>Falls asleep mid-sentence</td><td>To share good advice</td></tr>
+          <tr><td>Tinker Nix</td><td>Inventor gnome</td><td>Pockets full of springs</td><td>To fix everything</td></tr>
+          <tr><td>Boss Pip</td><td>Goblin leader</td><td>Giggles at everything</td><td>Recognition and fun</td></tr>
+          <tr><td>Wispelle</td><td>Fen witch</td><td>Polite, always serves tea</td><td>Company in the fen</td></tr>
+          <tr><td>Lantern-Guard Lira</td><td>Forest ranger</td><td>Carves tiny wooden animals</td><td>Travellers kept safe</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S20: MONSTERS -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s20">
+      <div class="section-badge">Section 20</div>
+      <h1 class="page-title">Monsters</h1>
+      <p>In Lanternwood Adventures, monsters are rarely truly evil. Most of them are scared, or lonely, or cross because someone did something rude near their bridge. Understanding why a creature behaves as it does is often more useful than defeating it.</p>
+      <p>Every monster has a <strong>peaceful exit</strong>: something that calms it, distracts it, or resolves the underlying problem. Finding that exit is always an option.</p>
+
+      <div class="monster-grid">
+        <div class="monster-card">
+          <div><div class="monster-name">Goblin Trickster</div><div class="monster-notes">Prankster and opportunist. Flees or surrenders if outwitted or humiliated.</div></div>
+          <div class="monster-stat"><span class="monster-stat-label">TN</span><span class="monster-stat-val">7</span></div>
+          <div class="monster-stat"><span class="monster-stat-label">HP</span><span class="monster-stat-val">2</span></div>
+        </div>
+        <div class="monster-card">
+          <div><div class="monster-name">Wolf Pack</div><div class="monster-notes">Dangerous when cornered. Calms with food or the Animal Friend trait.</div></div>
+          <div class="monster-stat"><span class="monster-stat-label">TN</span><span class="monster-stat-val">8</span></div>
+          <div class="monster-stat"><span class="monster-stat-label">HP</span><span class="monster-stat-val">2</span></div>
+        </div>
+        <div class="monster-card">
+          <div><div class="monster-name">Troll Under the Bridge</div><div class="monster-notes">Demands tolls. Afraid of fire. Will accept a good joke or answer a riddle.</div></div>
+          <div class="monster-stat"><span class="monster-stat-label">TN</span><span class="monster-stat-val">9</span></div>
+          <div class="monster-stat"><span class="monster-stat-label">HP</span><span class="monster-stat-val">3</span></div>
+        </div>
+        <div class="monster-card">
+          <div><div class="monster-name">Brown Bear</div><div class="monster-notes">Strong but slow. Loud noise or fire will drive it off.</div></div>
+          <div class="monster-stat"><span class="monster-stat-label">TN</span><span class="monster-stat-val">9</span></div>
+          <div class="monster-stat"><span class="monster-stat-label">HP</span><span class="monster-stat-val">3</span></div>
+        </div>
+        <div class="monster-card">
+          <div><div class="monster-name">Spriggan</div><div class="monster-notes">Steals shiny things. Fades in daylight. Loves a good trade.</div></div>
+          <div class="monster-stat"><span class="monster-stat-label">TN</span><span class="monster-stat-val">7</span></div>
+          <div class="monster-stat"><span class="monster-stat-label">HP</span><span class="monster-stat-val">2</span></div>
+        </div>
+        <div class="monster-card">
+          <div><div class="monster-name">Giant Spider</div><div class="monster-notes">Sticky webs can trap heroes. Afraid of bright light.</div></div>
+          <div class="monster-stat"><span class="monster-stat-label">TN</span><span class="monster-stat-val">8</span></div>
+          <div class="monster-stat"><span class="monster-stat-label">HP</span><span class="monster-stat-val">2</span></div>
+        </div>
+        <div class="monster-card">
+          <div><div class="monster-name">Will-o-the-Wisp</div><div class="monster-notes">Lures travellers astray. Fades away if completely ignored.</div></div>
+          <div class="monster-stat"><span class="monster-stat-label">TN</span><span class="monster-stat-val">8</span></div>
+          <div class="monster-stat"><span class="monster-stat-label">HP</span><span class="monster-stat-val">1</span></div>
+        </div>
+        <div class="monster-card">
+          <div><div class="monster-name">Wild Boar</div><div class="monster-notes">Charges in a straight line. Trick it into hitting a tree or wall.</div></div>
+          <div class="monster-stat"><span class="monster-stat-label">TN</span><span class="monster-stat-val">8</span></div>
+          <div class="monster-stat"><span class="monster-stat-label">HP</span><span class="monster-stat-val">2</span></div>
+        </div>
+        <div class="monster-card">
+          <div><div class="monster-name">Forest Giant</div><div class="monster-notes">Slow and proud. Will stand down if treated with genuine respect.</div></div>
+          <div class="monster-stat"><span class="monster-stat-label">TN</span><span class="monster-stat-val">10</span></div>
+          <div class="monster-stat"><span class="monster-stat-label">HP</span><span class="monster-stat-val">4</span></div>
+        </div>
+        <div class="monster-card">
+          <div><div class="monster-name">Redcap</div><div class="monster-notes">Wears iron boots. Hates bells and bright colours.</div></div>
+          <div class="monster-stat"><span class="monster-stat-label">TN</span><span class="monster-stat-val">9</span></div>
+          <div class="monster-stat"><span class="monster-stat-label">HP</span><span class="monster-stat-val">2</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S21: TREASURE -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s21">
+      <div class="section-badge">Section 21</div>
+      <h1 class="page-title">Treasure & Rewards (d6)</h1>
+      <p>Treasure is not just gold. It is the reward that feels right for what the heroes did and where they went. Roll or choose.</p>
+      <div class="table-wrap">
+        <table>
+          <tr><th>Roll</th><th>Reward</th><th>Effect</th></tr>
+          <tr><td>1</td><td>Pouch of Silver</td><td>10–20 coins. Spend in a town to buy food, equipment, or goodwill from an NPC.</td></tr>
+          <tr><td>2</td><td>Healing Potion</td><td>Restore 2 HP when drunk.</td></tr>
+          <tr><td>3</td><td>Strange Trinket</td><td>Once per adventure, roll with advantage.</td></tr>
+          <tr><td>4</td><td>New Ally</td><td>An animal, sprite, or kind villager who helps with one roll before going on their way.</td></tr>
+          <tr><td>5</td><td>Sturdy Weapon</td><td>Once per adventure, add +1 to a combat roll.</td></tr>
+          <tr><td>6</td><td>Map Fragment</td><td>Points to a hidden place or the start of the next adventure.</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S22: MICRO-ADVENTURE -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s22">
+      <div class="section-badge">Section 22</div>
+      <h1 class="page-title">Micro-Adventure: The Apple Festival Rescue</h1>
+      <p>A complete one-session story for two to four players (45–60 minutes).</p>
+
+      <div class="intro-narrative" style="font-style: normal;">
+        <p><strong>Hook:</strong> During Oakendell's beloved Apple Festival, the parade's Golden Apple trophy vanishes. Flour dust on the ground, a small red mushroom cap under the prize table, and wagon wheel tracks in the mud point to the Buttoncap Goblins. The heroes volunteer to investigate.</p>
+      </div>
+
+      <h3 class="sub-title">The Five Beats</h3>
+      <div class="steps">
+        <div class="step-card"><div class="step-num">1</div><div class="step-content"><h4>Festival Square (Social Puzzle)</h4><p>Calm the worried crowd (Mind TN 7), gather rumours (roll Section 18), and find the three clues: flour dust, the mushroom cap, the wheel tracks leading to the river.</p></div></div>
+        <div class="step-card"><div class="step-num">2</div><div class="step-content"><h4>The Journey (Hexcrawl)</h4><p>Travel two or three hexes to reach the Lonely Bridge. Roll Discoveries as normal. Place Owly Sage on one hex to nudge the heroes if needed.</p></div></div>
+        <div class="step-card"><div class="step-num">3</div><div class="step-content"><h4>The Lonely Bridge (Choice)</h4><p>Troll Gurn guards the bridge. He is grumpy because rain warped his favourite bench. Pay the toll: a joke or riddle (TN 7), a pastry (TN 5), or promise to help paint the rail (automatic success, but they owe a favour). Dashing across without paying is TN 9.</p></div></div>
+        <div class="step-card"><div class="step-num">4</div><div class="step-content"><h4>The Goblin Camp (Contest or Friendship)</h4><p>Boss Pip wanted recognition, not theft. Run an Extended Challenge: best prank, best rhyme, best dance. Three wins before two losses. On success, Boss Pip returns the Apple with enormous ceremony.</p></div></div>
+        <div class="step-card"><div class="step-num">5</div><div class="step-content"><h4>Resolution (Epilogue)</h4><p>The Golden Apple is returned. The mayor is delighted. Goblins are invited to perform at next year's festival. Everyone shares pie.</p></div></div>
+      </div>
+
+      <h3 class="sub-title">Key NPCs</h3>
+      <div class="table-wrap">
+        <table>
+          <tr><th>NPC</th><th>Role</th><th>Notes</th></tr>
+          <tr><td>Baker Brindle</td><td>Ally</td><td>Provides healing pastries (+1 HP on a safe rest), knows the goblins by reputation.</td></tr>
+          <tr><td>Boss Pip</td><td>Antagonist/Ally</td><td>TN 7, HP 2. Giggles constantly. Wants recognition and fun.</td></tr>
+          <tr><td>Troll Gurn</td><td>Obstacle</td><td>TN 9, HP 3. Hates rain. Loves fresh paint. Will accept a good joke.</td></tr>
+        </table>
+      </div>
+
+      <h3 class="sub-title">Treasure</h3>
+      <ul class="book-list">
+        <li>Festival ribbon (advantage once when you brag, tell a tall tale, or make an impression)</li>
+        <li>Coin pouch (10 silver)</li>
+        <li>Map fragment pointing to a door beneath Moonstep Hill</li>
+      </ul>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S23: EXAMPLES OF PLAY -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s23">
+      <div class="section-badge">Section 23</div>
+      <h1 class="page-title">Examples of Play</h1>
+
+      <h3 class="sub-title">Short: Social Puzzle — The Toll</h3>
+      <div class="play-quote">
+        <span class="speaker">GM:</span> "The troll blocks the bridge and demands a toll."<br>
+        <span class="speaker">Wizard:</span> "I cast Giggle Dust."<br>
+        <em>Roll Mind vs TN 7. Success.</em><br>
+        <span class="speaker">GM:</span> "He wheezes with laughter. Between hiccups: 'Fine... tell me a joke instead of coins.'"<br>
+        <span class="speaker">Rogue:</span> "I'm a Joke Teller. Advantage?"<br>
+        <em>Roll with advantage. Success.</em><br>
+        <span class="speaker">GM:</span> "He wipes a tear. 'Through you go, comedians.'"
+      </div>
+
+      <h3 class="sub-title">Short: Extended Challenge — The Cheese Chase</h3>
+      <p>Goal: catch Buttoncap goblins rolling a stolen cheese wheel. Three successes before two setbacks.</p>
+      <ul class="book-list">
+        <li>Beat 1: track footprints through the market (Mind vs TN 7).</li>
+        <li>Beat 2: leap a brook without getting soaked (Dex vs TN 7).</li>
+        <li>Beat 3: distract a cow who has decided to help the goblins (any creative plan).</li>
+      </ul>
+      <p>Possible setbacks: wheel hits a rock and splits; a goose joins the chase; the goblins vanish around a corner while you argue about the best plan.</p>
+
+      <h3 class="sub-title">Short: Friendship Hearts — The Forest Giant</h3>
+      <p>Forest Giant Bramwald (three Hearts). Gift him a story about his home valley: Heart 1. Fix his favourite chair using rope and a bit of magic: Heart 2. Invite him to the village concert: Heart 3. He moves a fallen oak from the road and waves you through.</p>
+
+      <h3 class="sub-title">Long: The Lonely Bridge (10–15 mins)</h3>
+      <div class="play-quote">
+        <em>The Ranger scans for trouble. 2d6 + Dex vs TN 7. Success: she spots muddy toes beneath the bridge rail.</em><br><br>
+        <em>The Wizard casts Light on a pebble and rolls it across like treasure. The goblins scramble out, mesmerised.</em><br><br>
+        <em>Boss Pip demands a riddle. The Rogue uses Riddle Lover (advantage) but rolls a close miss. They get through, but drop the glowing pebble in the river.</em><br><br>
+        <em>The merchant crossing behind them gets through safely. Reward: a Sturdy Weapon found in the muddy shallows.</em>
+      </div>
+
+      <h3 class="sub-title">Long: Tea at the Fen</h3>
+      <div class="play-quote">
+        <span class="speaker">GM:</span> "Witch Wispelle serves mint tea. A jar on her shelf flickers crossly."<br>
+        <em>Healer uses Kind Words on the will-o-wisp. Success: Heart 1.</em><br>
+        <em>Ranger promises stargazing with a glow-jar. Success: Heart 2.</em><br>
+        <em>Wizard tries a spell, rolls a mishap: tiny fireworks. The wisp giggles unexpectedly. Heart 3.</em><br>
+        <em>The wisp now lights safe paths through Glimmerfen.</em>
+      </div>
+
+      <h3 class="sub-title">Long: Pie-Thief Shrine</h3>
+      <div class="play-quote">
+        <span class="speaker">GM:</span> "The Moonstep stones hum. A fox sleeps on the altar. Flour dust and crumbs dot the steps."<br>
+        <em>Heroes propose: sing a lullaby (Musical trait, advantage), leave a trade pie, solve a runic recipe carved into the stone.</em><br>
+        <em>Extended Challenge: three successes before two setbacks to restore the shrine.</em><br>
+        <em>On success, the fox stretches, flicks its tail, and noses a small silver key out from under its paw.</em>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S24: CHEAT SHEET -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s24">
+      <div class="section-badge">Section 24</div>
+      <h1 class="page-title">GM Reference Cheat Sheet</h1>
+      <p>Everything you need at the table, at a glance.</p>
+
+      <div class="cheat-grid">
+        <div class="cheat-card"><h4>Core Roll</h4><p>2d6 + Stat vs TN</p></div>
+        <div class="cheat-card"><h4>Advantage</h4><p>3d6, keep best two</p></div>
+        <div class="cheat-card"><h4>Starting HP</h4><p>8</p></div>
+        <div class="cheat-card"><h4>Magic</h4><p>2d6 + Mind vs TN 7. Once per scene per spell.</p></div>
+        <div class="cheat-card"><h4>Combat</h4><p>Beat TN = foe -1 HP. Fail = hero -1 HP.</p></div>
+        <div class="cheat-card"><h4>Close Miss</h4><p>Miss by exactly 1 = succeed with a twist.</p></div>
+        <div class="cheat-card"><h4>Teamwork</h4><p>Helper gives +1 or advantage.</p></div>
+        <div class="cheat-card"><h4>Short Rest</h4><p>+1 HP (safe location)</p></div>
+        <div class="cheat-card"><h4>Long Rest</h4><p>Full HP restored</p></div>
+        <div class="cheat-card"><h4>Hexcrawl</h4><p>1–3 empty, 4–5 discovery (d66), 6 key location</p></div>
+        <div class="cheat-card"><h4>NPC Reactions (2d6)</h4><p>2–4 hostile, 5–6 wary, 7–9 neutral, 10–11 friendly, 12 helpful</p></div>
+        <div class="cheat-card"><h4>Progression</h4><p>+1 HP per adventure; +1 Trait (heroic deed); +1 Stat every 3 adventures (max +2)</p></div>
+      </div>
+
+      <h3 class="sub-title">Target Numbers</h3>
+      <div class="tn-strip">
+        <div class="tn-pill"><span class="tn-label">Easy</span><span class="tn-num">5</span></div>
+        <div class="tn-pill"><span class="tn-label">Normal</span><span class="tn-num">7</span></div>
+        <div class="tn-pill"><span class="tn-label">Hard</span><span class="tn-num">9</span></div>
+        <div class="tn-pill"><span class="tn-label">Very Hard</span><span class="tn-num">11</span></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S25: OPTIONAL RULES -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s25">
+      <div class="section-badge">Section 25</div>
+      <h1 class="page-title">Optional Rules</h1>
+      <p>Add these once the group is comfortable with the basics.</p>
+
+      <div class="rule-box">
+        <h4>⭐ Stars and Wishes</h4>
+        <p>After every session, each person shares one favourite moment (a Star) and one thing they would love to try next time (a Wish). Takes five minutes. Makes the next session noticeably better.</p>
+      </div>
+      <div class="rule-box">
+        <h4>💛 Comfort and Courage</h4>
+        <p>Once per session, one player can offer kind, genuine encouragement to another player's hero. That hero rolls with advantage on their next roll.</p>
+      </div>
+      <div class="rule-box">
+        <h4>🔧 Tools Matter</h4>
+        <p>Having exactly the right item for a task lowers the TN by 2. A lantern in darkness. A rope when climbing. A pie when negotiating with a hungry troll.</p>
+      </div>
+      <div class="rule-box">
+        <h4>🍀 Luck Tokens</h4>
+        <p>Each hero starts each session with one Luck Token. Spend it to reroll one die, or to turn a failure into a Close Miss. Tokens do not carry over between sessions.</p>
+      </div>
+      <div class="rule-box">
+        <h4>🏃 Morale</h4>
+        <p>When enemies are hurt or clearly outnumbered, they may choose to flee, surrender, negotiate, or offer something useful. Use this to end combats early and open up interesting story moments.</p>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S26: HEX MAP -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s26">
+      <div class="section-badge">Section 26</div>
+      <h1 class="page-title">Blank 6×6 Hex Map</h1>
+      <p>Print this or copy it onto paper. Number rows 1–6 (north to south), columns 1–6 (west to east). Roll your Start and Goal hexes with 1d6 each.</p>
+      <div class="hex-map-container">
+        <svg viewBox="0 0 500 460" xmlns="http://www.w3.org/2000/svg" style="max-width:500px; width:100%">
+          <!-- Column labels -->
+          <text x="62" y="22" text-anchor="middle" font-family="Merriweather Sans, sans-serif" font-size="12" fill="#c47c2b" font-weight="600">1</text>
+          <text x="130" y="22" text-anchor="middle" font-family="Merriweather Sans, sans-serif" font-size="12" fill="#c47c2b" font-weight="600">2</text>
+          <text x="198" y="22" text-anchor="middle" font-family="Merriweather Sans, sans-serif" font-size="12" fill="#c47c2b" font-weight="600">3</text>
+          <text x="266" y="22" text-anchor="middle" font-family="Merriweather Sans, sans-serif" font-size="12" fill="#c47c2b" font-weight="600">4</text>
+          <text x="334" y="22" text-anchor="middle" font-family="Merriweather Sans, sans-serif" font-size="12" fill="#c47c2b" font-weight="600">5</text>
+          <text x="402" y="22" text-anchor="middle" font-family="Merriweather Sans, sans-serif" font-size="12" fill="#c47c2b" font-weight="600">6</text>
+          <!-- Row labels -->
+          <text x="20" y="72" text-anchor="middle" font-family="Merriweather Sans, sans-serif" font-size="12" fill="#c47c2b" font-weight="600">1</text>
+          <text x="20" y="142" text-anchor="middle" font-family="Merriweather Sans, sans-serif" font-size="12" fill="#c47c2b" font-weight="600">2</text>
+          <text x="20" y="212" text-anchor="middle" font-family="Merriweather Sans, sans-serif" font-size="12" fill="#c47c2b" font-weight="600">3</text>
+          <text x="20" y="282" text-anchor="middle" font-family="Merriweather Sans, sans-serif" font-size="12" fill="#c47c2b" font-weight="600">4</text>
+          <text x="20" y="352" text-anchor="middle" font-family="Merriweather Sans, sans-serif" font-size="12" fill="#c47c2b" font-weight="600">5</text>
+          <text x="20" y="422" text-anchor="middle" font-family="Merriweather Sans, sans-serif" font-size="12" fill="#c47c2b" font-weight="600">6</text>
+          <!-- Hex grid: 6 cols x 6 rows, offset columns -->
+          <script type="text/javascript">
+            // Generated hex positions inline in SVG
+          </script>
+          <!-- Row 1 -->
+          <polygon points="96,32 123,47 123,77 96,92 69,77 69,47" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="164,32 191,47 191,77 164,92 137,77 137,47" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="232,32 259,47 259,77 232,92 205,77 205,47" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="300,32 327,47 327,77 300,92 273,77 273,47" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="368,32 395,47 395,77 368,92 341,77 341,47" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="436,32 463,47 463,77 436,92 409,77 409,47" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <!-- Row 2 -->
+          <polygon points="96,102 123,117 123,147 96,162 69,147 69,117" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="164,102 191,117 191,147 164,162 137,147 137,117" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="232,102 259,117 259,147 232,162 205,147 205,117" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="300,102 327,117 327,147 300,162 273,147 273,117" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="368,102 395,117 395,147 368,162 341,147 341,117" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="436,102 463,117 463,147 436,162 409,147 409,117" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <!-- Row 3 -->
+          <polygon points="96,172 123,187 123,217 96,232 69,217 69,187" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="164,172 191,187 191,217 164,232 137,217 137,187" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="232,172 259,187 259,217 232,232 205,217 205,187" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="300,172 327,187 327,217 300,232 273,217 273,187" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="368,172 395,187 395,217 368,232 341,217 341,187" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="436,172 463,187 463,217 436,232 409,217 409,187" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <!-- Row 4 -->
+          <polygon points="96,242 123,257 123,287 96,302 69,287 69,257" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="164,242 191,257 191,287 164,302 137,287 137,257" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="232,242 259,257 259,287 232,302 205,287 205,257" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="300,242 327,257 327,287 300,302 273,287 273,257" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="368,242 395,257 395,287 368,302 341,287 341,257" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="436,242 463,257 463,287 436,302 409,287 409,257" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <!-- Row 5 -->
+          <polygon points="96,312 123,327 123,357 96,372 69,357 69,327" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="164,312 191,327 191,357 164,372 137,357 137,327" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="232,312 259,327 259,357 232,372 205,357 205,327" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="300,312 327,327 327,357 300,372 273,357 273,327" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="368,312 395,327 395,357 368,372 341,357 341,327" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="436,312 463,327 463,357 436,372 409,357 409,327" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <!-- Row 6 -->
+          <polygon points="96,382 123,397 123,427 96,442 69,427 69,397" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="164,382 191,397 191,427 164,442 137,427 137,397" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="232,382 259,397 259,427 232,442 205,427 205,397" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="300,382 327,397 327,427 300,442 273,427 273,397" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="368,382 395,397 395,427 368,442 341,427 341,397" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+          <polygon points="436,382 463,397 463,427 436,442 409,427 409,397" fill="none" stroke="#d4c4a0" stroke-width="1.5"/>
+        </svg>
+        <p style="font-size: 12px; color: var(--ink-light); margin-top: 8px;">Print this page, or copy the grid onto paper. Roll 1d6 twice to place your Start hex; roll again for your Goal.</p>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S27: CHARACTER SHEET -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s27">
+      <div class="section-badge">Section 27</div>
+      <h1 class="page-title">Character Sheet</h1>
+      <p>Fill this in on screen, or print the page and complete it by hand.</p>
+
+      <div class="char-sheet">
+        <div class="char-sheet-title">Lanternwood Adventures</div>
+        <div class="char-sheet-sub">Hero Sheet</div>
+
+        <div class="char-grid">
+          <div>
+            <div class="char-field"><span class="char-label">Hero Name</span><input class="char-input" type="text" placeholder="e.g. Bramble the Bold"></div>
+            <div class="char-field"><span class="char-label">Class</span><input class="char-input" type="text" placeholder="Warrior / Wizard / Rogue..."></div>
+            <div class="char-field"><span class="char-label">Race</span><input class="char-input" type="text" placeholder="Optional"></div>
+            <div class="char-field"><span class="char-label">Player</span><input class="char-input" type="text" placeholder="Your name"></div>
+            <div class="char-field"><span class="char-label">Gear</span><input class="char-input" type="text" placeholder="A lantern, rope, herbs..."></div>
+          </div>
+
+          <div>
+            <div style="margin-bottom: 12px;">
+              <div style="font-family: 'Merriweather Sans', sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--amber); margin-bottom: 8px;">Stats (assign +1, +1, 0)</div>
+              <div class="stat-row">
+                <span class="stat-name">Strength</span>
+                <div class="stat-toggle">
+                  <button class="stat-btn" onclick="toggleStat(this, 'str')" data-val="+1">+1</button>
+                  <button class="stat-btn selected" onclick="toggleStat(this, 'str')" data-val="0">0</button>
+                </div>
+              </div>
+              <div class="stat-row">
+                <span class="stat-name">Dexterity</span>
+                <div class="stat-toggle">
+                  <button class="stat-btn" onclick="toggleStat(this, 'dex')" data-val="+1">+1</button>
+                  <button class="stat-btn selected" onclick="toggleStat(this, 'dex')" data-val="0">0</button>
+                </div>
+              </div>
+              <div class="stat-row">
+                <span class="stat-name">Mind</span>
+                <div class="stat-toggle">
+                  <button class="stat-btn" onclick="toggleStat(this, 'mind')" data-val="+1">+1</button>
+                  <button class="stat-btn selected" onclick="toggleStat(this, 'mind')" data-val="0">0</button>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-family: 'Merriweather Sans', sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--amber); margin-bottom: 8px;">Hit Points (max 8)</div>
+              <div class="hp-tracker" id="hp-tracker">
+              </div>
+              <div style="font-family: 'Merriweather Sans', sans-serif; font-size: 11px; color: var(--ink-light); margin-top: 6px;" id="hp-display">HP: 8 / 8</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <div style="font-family: 'Merriweather Sans', sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--amber); margin-bottom: 8px;">Traits (start with 2, earn more)</div>
+          <div class="trait-list" id="trait-list">
+            <div class="trait-item"><input type="text" placeholder="Trait 1 — e.g. Brave"></div>
+            <div class="trait-item"><input type="text" placeholder="Trait 2 — e.g. Animal Friend"></div>
+            <div class="trait-item"><input type="text" placeholder="Earned trait 3"></div>
+            <div class="trait-item"><input type="text" placeholder="Earned trait 4"></div>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <div style="font-family: 'Merriweather Sans', sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--amber); margin-bottom: 8px;">Spells (Wizard / Healer — choose 3)</div>
+          <div class="trait-list">
+            <div class="trait-item"><input type="text" placeholder="Spell 1"></div>
+            <div class="trait-item"><input type="text" placeholder="Spell 2"></div>
+            <div class="trait-item"><input type="text" placeholder="Spell 3"></div>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <div style="font-family: 'Merriweather Sans', sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--amber); margin-bottom: 8px;">Notes / Hero Sketch</div>
+          <textarea style="width:100%; border: 1px solid var(--parchment-deep); border-radius: 4px; padding: 10px; font-family: 'Lora', serif; font-size: 14px; color: var(--ink); min-height: 80px; background: var(--parchment); resize: vertical;" placeholder="Draw your hero here, or jot notes..."></textarea>
+        </div>
+
+        <button class="print-btn" onclick="window.print()">🖨 Print Character Sheet</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- S28: EXAMPLE HEXES -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-s28">
+      <div class="section-badge">Section 28</div>
+      <h1 class="page-title">Example Hexes</h1>
+      <p>Three sample hexes to show what a populated map might look like. Use these as inspiration for filling in your own grid.</p>
+
+      <div class="region-grid">
+        <div class="region-card">
+          <div class="region-name">Hex 2-3 — Oakendell Outskirts</div>
+          <div class="region-desc">Rolling meadows, an old stone well. The well smells faintly of cinnamon. A cat is sitting on the wall and will not move for anything.</div>
+        </div>
+        <div class="region-card">
+          <div class="region-name">Hex 3-4 — Lanternwood Edge</div>
+          <div class="region-desc">The trees become taller here. Lantern-fruit glows amber in the canopy. A small footpath winds deeper in, marked by white stones.</div>
+        </div>
+        <div class="region-card">
+          <div class="region-name">Hex 4-5 — Moonstep Hills</div>
+          <div class="region-desc">Three standing stones in a rough triangle. Wildflowers everywhere. At noon, a path becomes visible between them that was not there before.</div>
+        </div>
+      </div>
+
+      <div class="ornament">✦ ✦ ✦</div>
+
+      <div style="text-align: center; padding: 20px 0;">
+        <p style="font-style: italic; font-size: 16px; color: var(--ink-light);">Lanternwood Adventures is designed for cosy play, generous rulings,<br>and stories worth telling again at breakfast the next morning.</p>
+        <p style="font-style: italic; font-size: 15px; color: var(--amber); margin-top: 12px;">Good luck, and good adventuring.</p>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- MOBILE MENU BUTTON -->
+<button id="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+<!-- DICE MODAL -->
+<div id="dice-modal">
+  <div class="dice-panel">
+    <h3>Roll the Dice</h3>
+    <div class="dice-buttons">
+      <button class="dice-btn" onclick="rollDice(1)">1d6</button>
+      <button class="dice-btn" onclick="rollDice(2)">2d6</button>
+      <button class="dice-btn" onclick="rollDice(3, true)">3d6 (Adv)</button>
+      <button class="dice-btn" onclick="rollD66()">d66</button>
+    </div>
+    <div class="dice-output" id="dice-output">
+      <span style="color: var(--ink-light); font-size: 13px;">Choose dice above</span>
+    </div>
+    <button class="close-modal" onclick="closeDiceModal()">Close</button>
+  </div>
+</div>
+
+<script>
+// ─── NAVIGATION ───
+const sections = ['cover','s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s11','s12','s13','s14','s15','s16','s17','s18','s19','s20','s21','s22','s23','s24','s25','s26','s27','s28'];
+const sectionTitles = {
+  'cover': 'Cover & Story', 's1': '1. What is Role-Playing?', 's2': '2. The Cozy Realms',
+  's3': '3. What You Need', 's4': '4. Quick Start', 's5': '5. Character Creation',
+  's6': '6. Classes & Races', 's7': '7. Names & Traits', 's8': '8. Core Rules',
+  's9': '9. Conflict Types', 's10': '10. Combat', 's11': '11. Magic',
+  's12': '12. GM Guidance', 's13': '13. GM Step-by-Step', 's14': '14. Hexcrawl',
+  's15': '15. Adventure Generator', 's16': '16. Discoveries', 's17': '17. Fey Encounters',
+  's18': '18. Rumours', 's19': '19. NPCs', 's20': '20. Monsters',
+  's21': '21. Treasure', 's22': '22. Micro-Adventure', 's23': '23. Examples of Play',
+  's24': '24. GM Cheat Sheet', 's25': '25. Optional Rules', 's26': '26. Hex Map',
+  's27': '27. Character Sheet', 's28': '28. Example Hexes'
+};
+
+let currentSection = 'cover';
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  const el = document.getElementById('sec-' + id);
+  if (el) { el.classList.add('active'); el.scrollTop = 0; }
+
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + id + "'")) {
+      n.classList.add('active');
+    }
+  });
+
+  document.getElementById('topbar-section').textContent = sectionTitles[id] || '';
+  document.getElementById('main').scrollTo(0, 0);
+  currentSection = id;
+
+  const idx = sections.indexOf(id);
+  const pct = ((idx + 1) / sections.length * 100).toFixed(1);
+  document.getElementById('progress').style.width = pct + '%';
+
+  if (window.innerWidth <= 768) closeSidebar();
+}
+
+// ─── DICE ROLLER ───
+function rollDice(n, advantage = false) {
+  const rolls = [];
+  for (let i = 0; i < (advantage ? 3 : n); i++) {
+    rolls.push(Math.floor(Math.random() * 6) + 1);
+  }
+
+  let total, kept;
+  if (advantage) {
+    const sorted = [...rolls].sort((a,b) => b-a);
+    kept = sorted.slice(0, 2);
+    total = kept.reduce((a,b) => a+b, 0);
+  } else {
+    total = rolls.reduce((a,b) => a+b, 0);
+    kept = rolls;
+  }
+
+  let outcomeHtml = '';
+  if (n >= 2) {
+    const tn = 7;
+    const diff = total - tn;
+    if (diff >= 0) {
+      outcomeHtml = `<div class="dice-outcome outcome-success">✓ Success (beat TN 7 by ${diff})</div>`;
+    } else if (diff === -1) {
+      outcomeHtml = `<div class="dice-outcome outcome-twist">≈ Close Miss — succeed with a twist</div>`;
+    } else {
+      outcomeHtml = `<div class="dice-outcome outcome-fail">✗ Failure (missed TN 7 by ${Math.abs(diff)})</div>`;
+    }
+  }
+
+  const individualText = advantage
+    ? `Rolled: [${rolls.join(', ')}] — kept [${kept.join(', ')}]`
+    : `Rolled: [${rolls.join(', ')}]`;
+
+  document.getElementById('dice-output').innerHTML = `
+    <div class="dice-big-result">${total}</div>
+    <div class="dice-individual">${individualText}</div>
+    ${outcomeHtml}
+  `;
+
+  const el = document.getElementById('dice-result');
+  el.textContent = total;
+  el.classList.remove('rolling');
+  void el.offsetWidth;
+  el.classList.add('rolling');
+}
+
+function rollD66() {
+  const d1 = Math.floor(Math.random() * 6) + 1;
+  const d2 = Math.floor(Math.random() * 6) + 1;
+  const result = d1 * 10 + d2;
+  document.getElementById('dice-output').innerHTML = `
+    <div class="dice-big-result">${result}</div>
+    <div class="dice-individual">d66: first die ${d1} (tens), second die ${d2} (units)</div>
+  `;
+}
+
+function openDiceModal() {
+  document.getElementById('dice-modal').classList.add('open');
+}
+
+function closeDiceModal() {
+  document.getElementById('dice-modal').classList.remove('open');
+}
+
+document.getElementById('dice-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeDiceModal();
+});
+
+// ─── MOBILE SIDEBAR ───
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('nav-overlay').classList.toggle('open');
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('nav-overlay').classList.remove('open');
+}
+
+// ─── ADVENTURE GENERATOR ───
+const actions = ['','Rescue','Discover','Find','Explore','Recover','Protect','Escape','Defeat','Deliver','Mend','Befriend'];
+const targets = ['','Stolen treasure','A wise old owl','The baker\'s recipe','A lost merchant','A magic crystal','A lost item or person','A cursed object','Goblin pranksters','An ancient map','A talking animal','A sleeping giant'];
+const locations = ['','A deep forest','A mountain cave','An old watchtower','An underground ruin','The Lonely Bridge','A deserted village','A marshy fen','An abandoned mill','A crystal lake','A hidden valley','A standing stone circle'];
+
+function generateQuest() {
+  const a = Math.floor(Math.random() * 11) + 2;
+  const t = Math.floor(Math.random() * 11) + 2;
+  const l = Math.floor(Math.random() * 11) + 2;
+
+  const rollA = a <= 12 ? a : 12;
+  const rollT = t <= 12 ? t : 12;
+  const rollL = l <= 12 ? l : 12;
+
+  document.getElementById('gen-result').innerHTML = `
+    <div class="gen-pill">${actions[rollA]}</div>
+    <div class="gen-sep">◆</div>
+    <div class="gen-pill">${targets[rollT]}</div>
+    <div class="gen-sep">◆</div>
+    <div class="gen-pill">${locations[rollL]}</div>
+  `;
+}
+
+// ─── HP TRACKER ───
+function buildHPTracker() {
+  const tracker = document.getElementById('hp-tracker');
+  let hp = 8;
+  tracker.innerHTML = '';
+  for (let i = 0; i < 8; i++) {
+    const pip = document.createElement('div');
+    pip.className = 'hp-pip filled';
+    pip.title = `HP ${i + 1}`;
+    pip.addEventListener('click', function() {
+      this.classList.toggle('filled');
+      const filled = tracker.querySelectorAll('.hp-pip.filled').length;
+      document.getElementById('hp-display').textContent = `HP: ${filled} / 8`;
+    });
+    tracker.appendChild(pip);
+  }
+}
+
+// ─── STAT BUTTONS ───
+function toggleStat(btn, stat) {
+  const siblings = btn.parentElement.querySelectorAll('.stat-btn');
+  siblings.forEach(s => s.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+// ─── INIT ───
+buildHPTracker();
+showSection('cover');
+</script>
+</body>
+</html>
